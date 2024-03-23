@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module home(input enable, input [12:0] pixel_index, input btnC, input btnL, input btnR,
+module home(input enable, input [12:0] pixel_index, input btnC, input btnL, input btnR, input btnD,
     input clock, output reg [15:0] oled_data = 0, output reg [2:0] todo = 0);
 
     parameter green = 16'b00000_111111_00000;
@@ -56,11 +56,11 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
     
     wire [15:0] oled_data1;
-    wire left, right, centre;
+    wire left, right, centre, down;
     
     dist_mem_home unit_home (pixel_index, oled_data1);
     
-    detect_button unit_button (enable, btnC, btnL, btnR, clk_1000hz, left, right, centre);
+    detect_button unit_button (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
     always @ (posedge clock)
     begin
@@ -130,12 +130,8 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
             begin
                 oled_data <= oled_data1;
             end
-            xLL <= 69;
-            xLR <= 71;
-            xRR <= 84;
-            xRL <= 82;
-            xRangeMin <= 69;
-            xRangeMax <= 84;
+            //activity <= 0;
+            //todo <= 0;
         end
     end
     
