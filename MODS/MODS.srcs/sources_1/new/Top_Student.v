@@ -35,29 +35,42 @@ module Top_Student (
     flexible_clock_module clk_divider_6p25m(clock, 7, clk_6p25m);
     
     wire [2:0] todo;
+    reg enable_home = 1;
+    reg enable_eat = 0;
+    wire returnHome;
+    reg [2:0] activities;
     
-    home unit_home(1, pixel_index, btnC, btnL, btnR, clk_25mhz, oled_data_home, todo);
+    home unit_home(enable_home, pixel_index, btnC, btnL, btnR, btnD, clk_25mhz, oled_data_home, todo);
     
-    eat unit_eat(pixel_index, oled_data_eat);
+    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clk_25mhz, pixel_index, oled_data_eat, returnHome);
     
     //todo: the activity. left most: 5, right most: 1
-    //todo 1: bath
+    //todo 0: home
+    //todo 1: eat
     //todo 2: sleep
-    //todo 3: eat
+    //todo 3: bath
     //todo 4: go work
     //todo 5: change clothes
     always @ (posedge clock) begin
-        if (todo == 1)
+        activities <= todo;
+        if (returnHome == 1)
         begin
+            activities <= 0;
+            //oled_data <= oled_data_home;
+        end
+        if (activities == 1)
+        begin
+            enable_eat <= 1;
+            enable_home <= 0;
             oled_data <= oled_data_eat;
         end
         else
         begin
+            enable_home <= 1;
+            enable_eat <= 0;
             oled_data <= oled_data_home;
         end
     end
-
-    //dist_mem_home unit_home (pixel_index, oled_data1);
 
     
     Oled_Display unit_oled(.clk(clk_6p25m), .reset(0), .frame_begin(fb), 

@@ -20,8 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module detect_button(input enable, input btnC, input btnL, input btnR, input clock, 
-    output reg left = 0, output reg right = 0, output reg centre = 0);
+module detect_button(input enable, input btnC, input btnL, input btnR, input btnD, input clock, 
+    output reg left = 0, output reg right = 0, output reg centre = 0, output reg down = 0);
 
     always @(posedge clock)
     begin
@@ -51,6 +51,14 @@ module detect_button(input enable, input btnC, input btnL, input btnR, input clo
             else
             begin
                 right <= 0;
+            end
+            if(btnD == 1)
+            begin
+                down <= 1;
+            end
+            else
+            begin
+                down <= 0;
             end
         end
     end
