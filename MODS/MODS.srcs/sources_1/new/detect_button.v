@@ -25,6 +25,7 @@ module detect_button(input enable, input btnC, input btnL, input btnR, input clo
 
     always @(posedge clock)
     begin
+        //check if go back home screen
         if (enable == 1)
             begin
             if(btnC == 1)

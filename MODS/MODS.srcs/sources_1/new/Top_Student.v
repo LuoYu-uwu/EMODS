@@ -25,62 +25,60 @@ module Top_Student (
 //// Oled Display ////////////////////////////////////////////////////////////////
     wire fb, send, sample; 
     reg [15:0] oled_data;
-    wire [15:0] oled_data_1;
-    wire [15:0] oled_data_A;
-    wire [15:0] oled_data_B;
-    wire [15:0] oled_data_C;
-    wire [15:0] oled_data_D;
-    wire [15:0] oled_data_group;
+    wire [15:0] oled_data_eat;
+    wire [15:0] oled_data_home;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
+    wire clk_25mhz;
+    flexible_clock_module unit_b (clock, 1, clk_25mhz);
     flexible_clock_module clk_divider_6p25m(clock, 7, clk_6p25m);
-
-    //Instantiate task A
-    task_A unit_A(.enable(sw[1]), .clock(clock), .btnC(btnC), .btnD(btnD), .sw(sw), 
-    .pixel_index(pixel_index), .oled_data(oled_data_A));
     
-    //Instantiate task B
-    task_B unit_B(.enable(sw[2]), .clock(clock), .pixel_index(pixel_index), 
-    .btnC(btnC), .btnL(btnL), .btnR(btnR), .sw(sw[0]), .oled_data(oled_data_B));
+    wire [2:0] todo;
     
-    //Instantiate task C
-    task_C unit_C(.enable(sw[3]), .basys_clock(clock), .btnD(btnD), .pixel_index(pixel_index),
-    .oled_data(oled_data_C));
+    home unit_home(1, pixel_index, btnC, btnL, btnR, clk_25mhz, oled_data_home, todo);
     
-    //Instantiate task D
-    task_D unit_D(.enable(sw[4]), .CLOCK(clock), .btnC(btnC), 
-    .btnU(btnU), .btnL(btnL), .btnR(btnR), .sw0(sw[0]), 
-    .pixel_index(pixel_index), .oled_data(oled_data_D));
+    eat unit_eat(pixel_index, oled_data_eat);
     
-    //Instantiate group task
-    group_task unit_group(.enable(sw[5]), .clock(clock), .PS2Clk(PS2Clk), .PS2Data(PS2Data), 
-    .an(an), .seg(seg), .dp(dp), .pixel_index(pixel_index), .oled_data(oled_data_group), 
-    .sw(sw), .btnC(btnC));
-    
-    
-    assign led[4:1] = sw[4:1];
-    
+    //todo: the activity. left most: 5, right most: 1
+    //todo 1: bath
+    //todo 2: sleep
+    //todo 3: eat
+    //todo 4: go work
+    //todo 5: change clothes
     always @ (posedge clock) begin
-        if (sw[1]) begin
-            oled_data = oled_data_A; // From task_A
-        end else if (sw[2]) begin
-            oled_data = oled_data_B; // From task_B
-        end else if (sw[3]) begin
-            oled_data = oled_data_C; // From task_C
-        end else if (sw[4]) begin
-            oled_data = oled_data_D; // From task_D
-        end else if (sw[5]) begin
-            oled_data = oled_data_group; // From group_task
-        end else begin
-            oled_data = 16'd0;
+        if (todo == 1)
+        begin
+            oled_data <= oled_data_eat;
+        end
+        else
+        begin
+            oled_data <= oled_data_home;
         end
     end
+
+    //dist_mem_home unit_home (pixel_index, oled_data1);
+
     
     Oled_Display unit_oled(.clk(clk_6p25m), .reset(0), .frame_begin(fb), 
     .sending_pixels(send), .sample_pixel(sample), .pixel_index(pixel_index), 
     .pixel_data(oled_data), .cs(JC[0]), .sdin(JC[1]), .sclk(JC[3]), 
     .d_cn(JC[4]), .resn(JC[5]), .vccen(JC[6]), .pmoden(JC[7]));
     
+//    wire [11:0] xpos;
+//    wire [11:0] ypos;
+//    wire [3:0] zpos;
+//    wire left, middle, right, new_event;
+    
+//    MouseCtl unit_mouse (.clk(clock), .rst(0), .value(0), .setx(0), .sety(0),
+//    .setmax_x(0), .setmax_y(0), .xpos(xpos), .ypos(ypos), .zpos(zpos), 
+//    .left(left), .middle(middle), .right(right), .new_event(new_event), 
+//    .ps2_clk(PS2Clk), .ps2_data(PS2Data));
+        
+//    paint unit_paint (.mouse_x(xpos), .mouse_y(ypos), .mouse_l(left), 
+//    .reset(clr), .pixel_index(pixel_index), .enable(1), 
+//    .clk_100M(clock), .clk_25M(clk_25mhz), .clk_12p5M(clk_12p5m), 
+//    .clk_6p25M(clk_6p25m), .slow_clk(slow_clk), .seg(seg2), 
+//    .colour_chooser(oled_data_paint), .led());
 
 endmodule
