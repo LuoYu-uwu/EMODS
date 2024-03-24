@@ -1,10 +1,10 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.2 (win64) Build 2258646 Thu Jun 14 20:03:12 MDT 2018
--- Date        : Sun Mar 24 12:03:14 2024
+-- Date        : Sun Mar 24 12:03:13 2024
 -- Host        : priceypiggie running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode funcsim
---               c:/Users/luoyu/NUS/y2s2/ee2026/Loopy/MODS/MODS.srcs/sources_1/ip/dist_mem_fruit/dist_mem_fruit_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim -rename_top dist_mem_fruit -prefix
+--               dist_mem_fruit_ dist_mem_fruit_sim_netlist.vhdl
 -- Design      : dist_mem_fruit
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -98,8 +98,6 @@ entity dist_mem_fruit_dist_mem_gen_v8_0_12 is
   attribute C_SYNC_ENABLE of dist_mem_fruit_dist_mem_gen_v8_0_12 : entity is 1;
   attribute C_WIDTH : integer;
   attribute C_WIDTH of dist_mem_fruit_dist_mem_gen_v8_0_12 : entity is 16;
-  attribute ORIG_REF_NAME : string;
-  attribute ORIG_REF_NAME of dist_mem_fruit_dist_mem_gen_v8_0_12 : entity is "dist_mem_gen_v8_0_12";
 end dist_mem_fruit_dist_mem_gen_v8_0_12;
 
 architecture STRUCTURE of dist_mem_fruit_dist_mem_gen_v8_0_12 is

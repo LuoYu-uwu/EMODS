@@ -1,10 +1,10 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.2 (win64) Build 2258646 Thu Jun 14 20:03:12 MDT 2018
--- Date        : Sun Mar 24 12:01:20 2024
+-- Date        : Sun Mar 24 12:01:19 2024
 -- Host        : priceypiggie running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub
---               c:/Users/luoyu/NUS/y2s2/ee2026/Loopy/MODS/MODS.srcs/sources_1/ip/dist_mem_pasta/dist_mem_pasta_stub.vhdl
+-- Command     : write_vhdl -force -mode synth_stub -rename_top dist_mem_pasta -prefix
+--               dist_mem_pasta_ dist_mem_pasta_stub.vhdl
 -- Design      : dist_mem_pasta
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a35tcpg236-1
