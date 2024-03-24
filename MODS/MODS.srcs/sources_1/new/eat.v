@@ -21,7 +21,7 @@
 
 
 module eat(input enable, input btnC, input btnL, input btnR, input btnD,
-    input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output reg returnHome = 0);
+    input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output return);
     
     
     parameter green = 16'b00000_111111_00000;
@@ -44,8 +44,14 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     reg [6:0] yRangeMin = 2;
     reg [6:0] yRangeMax = 22;
 
+    reg returnHome;
+    reg [31:0] count;
+    initial begin
+        count = 0;
+        returnHome = 0;
+    end
     
-    reg [31:0] count = 0;
+    assign return = returnHome;
     
     wire clk_1000hz;
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
@@ -55,7 +61,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     
     dist_mem_kitchen unit_kitchen (pixel_index, oled_data1);
     
-    detect_button unit_button (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
+    detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
     always @ (posedge clock)
     begin
@@ -106,7 +112,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             begin
                 oled_data <= oled_data1;
             end
-            //returnHome <= 0;
+            returnHome <= 0;
         end
     end
     

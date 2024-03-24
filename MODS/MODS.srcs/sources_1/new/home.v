@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module home(input enable, input [12:0] pixel_index, input btnC, input btnL, input btnR, input btnD,
+module home(input enable, input return_home, input [12:0] pixel_index, input btnC, input btnL, input btnR, input btnD,
     input clock, output reg [15:0] oled_data = 0, output reg [2:0] todo = 0);
 
     parameter green = 16'b00000_111111_00000;
@@ -48,9 +48,12 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
     reg [6:0] yDU = 15;
     
     //store selected activity
-    reg [2:0] activity = 0;
-    
-    reg [31:0] count = 0;
+    reg [2:0] activity;
+    reg [31:0] count;
+    initial begin
+        activity = 0;
+        count = 0;
+    end
     
     wire clk_1000hz;
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
@@ -60,7 +63,7 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
     
     dist_mem_home unit_home (pixel_index, oled_data1);
     
-    detect_button unit_button (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
+    detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
     always @ (posedge clock)
     begin
@@ -99,6 +102,10 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
                 count = count + 1;
                 todo <= activity + 1;
             end
+            else
+            begin
+                todo <= 0;
+            end
             //debouncing
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
             //set 5 boxes to choose activities
@@ -130,7 +137,11 @@ module home(input enable, input [12:0] pixel_index, input btnC, input btnL, inpu
             begin
                 oled_data <= oled_data1;
             end
-            //activity <= 0;
+            activity <= 0;
+            if (return_home == 1)
+            begin
+                todo <= 0;
+            end
             //todo <= 0;
         end
     end
