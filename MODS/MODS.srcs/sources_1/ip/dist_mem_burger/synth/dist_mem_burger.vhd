@@ -56,16 +56,16 @@ USE ieee.numeric_std.ALL;
 LIBRARY dist_mem_gen_v8_0_12;
 USE dist_mem_gen_v8_0_12.dist_mem_gen_v8_0_12;
 
-ENTITY dist_mem_home IS
+ENTITY dist_mem_burger IS
   PORT (
     a : IN STD_LOGIC_VECTOR(12 DOWNTO 0);
     spo : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
   );
-END dist_mem_home;
+END dist_mem_burger;
 
-ARCHITECTURE dist_mem_home_arch OF dist_mem_home IS
+ARCHITECTURE dist_mem_burger_arch OF dist_mem_burger IS
   ATTRIBUTE DowngradeIPIdentifiedWarnings : STRING;
-  ATTRIBUTE DowngradeIPIdentifiedWarnings OF dist_mem_home_arch: ARCHITECTURE IS "yes";
+  ATTRIBUTE DowngradeIPIdentifiedWarnings OF dist_mem_burger_arch: ARCHITECTURE IS "yes";
   COMPONENT dist_mem_gen_v8_0_12 IS
     GENERIC (
       C_FAMILY : STRING;
@@ -122,12 +122,12 @@ ARCHITECTURE dist_mem_home_arch OF dist_mem_home IS
     );
   END COMPONENT dist_mem_gen_v8_0_12;
   ATTRIBUTE X_CORE_INFO : STRING;
-  ATTRIBUTE X_CORE_INFO OF dist_mem_home_arch: ARCHITECTURE IS "dist_mem_gen_v8_0_12,Vivado 2018.2";
+  ATTRIBUTE X_CORE_INFO OF dist_mem_burger_arch: ARCHITECTURE IS "dist_mem_gen_v8_0_12,Vivado 2018.2";
   ATTRIBUTE CHECK_LICENSE_TYPE : STRING;
-  ATTRIBUTE CHECK_LICENSE_TYPE OF dist_mem_home_arch : ARCHITECTURE IS "dist_mem_home,dist_mem_gen_v8_0_12,{}";
+  ATTRIBUTE CHECK_LICENSE_TYPE OF dist_mem_burger_arch : ARCHITECTURE IS "dist_mem_burger,dist_mem_gen_v8_0_12,{}";
   ATTRIBUTE CORE_GENERATION_INFO : STRING;
-  ATTRIBUTE CORE_GENERATION_INFO OF dist_mem_home_arch: ARCHITECTURE IS "dist_mem_home,dist_mem_gen_v8_0_12,{x_ipProduct=Vivado 2018.2,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=dist_mem_gen,x_ipVersion=8.0,x_ipCoreRevision=12,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,C_FAMILY=artix7,C_ADDR_WIDTH=13,C_DEFAULT_DATA=0,C_DEPTH=6144,C_HAS_CLK=0,C_HAS_D=0,C_HAS_DPO=0,C_HAS_DPRA=0,C_HAS_I_CE=0,C_HAS_QDPO=0,C_HAS_QDPO_CE=0,C_HAS_QDPO_CLK=0,C_HAS_QDPO_RST=0,C_HAS_QDPO_SRST=0,C_HAS_QSPO=0,C_HAS_QSPO_CE=0,C_HAS_QSPO_RST=0,C_HAS_QSPO_SRST=0,C_HAS_SPO=1,C_HAS_WE=0,C_MEM_INIT" & 
-"_FILE=dist_mem_home.mif,C_ELABORATION_DIR=./,C_MEM_TYPE=0,C_PIPELINE_STAGES=0,C_QCE_JOINED=0,C_QUALIFY_WE=0,C_READ_MIF=1,C_REG_A_D_INPUTS=0,C_REG_DPRA_INPUT=0,C_SYNC_ENABLE=1,C_WIDTH=16,C_PARSER_TYPE=1}";
+  ATTRIBUTE CORE_GENERATION_INFO OF dist_mem_burger_arch: ARCHITECTURE IS "dist_mem_burger,dist_mem_gen_v8_0_12,{x_ipProduct=Vivado 2018.2,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=dist_mem_gen,x_ipVersion=8.0,x_ipCoreRevision=12,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,C_FAMILY=artix7,C_ADDR_WIDTH=13,C_DEFAULT_DATA=0,C_DEPTH=6144,C_HAS_CLK=0,C_HAS_D=0,C_HAS_DPO=0,C_HAS_DPRA=0,C_HAS_I_CE=0,C_HAS_QDPO=0,C_HAS_QDPO_CE=0,C_HAS_QDPO_CLK=0,C_HAS_QDPO_RST=0,C_HAS_QDPO_SRST=0,C_HAS_QSPO=0,C_HAS_QSPO_CE=0,C_HAS_QSPO_RST=0,C_HAS_QSPO_SRST=0,C_HAS_SPO=1,C_HAS_WE=0,C_MEM_IN" & 
+"IT_FILE=dist_mem_burger.mif,C_ELABORATION_DIR=./,C_MEM_TYPE=0,C_PIPELINE_STAGES=0,C_QCE_JOINED=0,C_QUALIFY_WE=0,C_READ_MIF=1,C_REG_A_D_INPUTS=0,C_REG_DPRA_INPUT=0,C_SYNC_ENABLE=1,C_WIDTH=16,C_PARSER_TYPE=1}";
 BEGIN
   U0 : dist_mem_gen_v8_0_12
     GENERIC MAP (
@@ -151,7 +151,7 @@ BEGIN
       C_HAS_QSPO_SRST => 0,
       C_HAS_SPO => 1,
       C_HAS_WE => 0,
-      C_MEM_INIT_FILE => "dist_mem_home.mif",
+      C_MEM_INIT_FILE => "dist_mem_burger.mif",
       C_ELABORATION_DIR => "./",
       C_MEM_TYPE => 0,
       C_PIPELINE_STAGES => 0,
@@ -180,4 +180,4 @@ BEGIN
       qdpo_srst => '0',
       spo => spo
     );
-END dist_mem_home_arch;
+END dist_mem_burger_arch;
