@@ -20,9 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module home(input enable, input return_home, input [12:0] pixel_index, input btnC, input btnL, input btnR, input btnD,
-    input clock, output reg [15:0] oled_data = 0, output reg [2:0] todo = 0);
-
+module home(input enable, input return_home, input [12:0] pixel_index, 
+    input btnC, input btnL, input btnR, input btnD,
+    input clock, output reg [15:0] oled_data = 0, 
+    output reg [2:0] todo = 0);
+    
     parameter green = 16'b00000_111111_00000;
     parameter white = 16'b11111_111111_11111;
     parameter red = 16'b11111_000000_00000;
@@ -47,7 +49,6 @@ module home(input enable, input return_home, input [12:0] pixel_index, input btn
     reg [6:0] yDD = 17;
     reg [6:0] yDU = 15;
     
-    //store selected activity
     reg [2:0] activity;
     reg [31:0] count;
     initial begin
@@ -61,7 +62,7 @@ module home(input enable, input return_home, input [12:0] pixel_index, input btn
     wire [15:0] oled_data1;
     wire left, right, centre, down;
     
-    dist_mem_homescreen unit_home (pixel_index, oled_data1);
+    dist_mem_hs unit_home (pixel_index, oled_data1);
     
     detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
