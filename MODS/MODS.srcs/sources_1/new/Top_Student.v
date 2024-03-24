@@ -50,12 +50,15 @@ module Top_Student (
     eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clk_25mhz, pixel_index, oled_data_eat, returnHome);
     
     //todo: the activity. left most: 5, right most: 1
-    //todo 0: home
     //todo 1: eat
     //todo 2: sleep
     //todo 3: bath
     //todo 4: go work
     //todo 5: change clothes
+    
+    //activity: basically todo's value
+    //but if returnHome = 1, set activity to 0
+    //activity = 0 means should go back homescreen
     always @ (posedge clock) begin
         if (returnHome == 1)
         begin
