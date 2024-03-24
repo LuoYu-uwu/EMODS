@@ -35,15 +35,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     assign x = pixel_index % 96;
     assign y = pixel_index / 96;
     
-//    reg [7:0] rightXMin = 63;
-//    reg [7:0] rightXMax = 68;
-//    reg [7:0] rightYMin = 7;
-//    reg [7:0] rightYMax = 17;
-//    reg [7:0] xRangeMin = 36;
-//    reg [7:0] xRangeMax = 56;
-//    reg [6:0] yRangeMin = 2;
-//    reg [6:0] yRangeMax = 22;
-    reg [2:0] foodSelect;
+    reg [2:0] foodSelect; //type of food to be selected
     reg returnHome;
     reg [31:0] count;
     initial begin
@@ -61,7 +53,6 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     wire [15:0] oled_data_pasta, oled_data_fruit, oled_data_burger, oled_data_dessert, oled_data_drink;
     wire left, right, centre, down;
     
-    //dist_mem_kitchen1 unit_kitchen (pixel_index, oled_data1);
     dist_mem_burger unit_burger(pixel_index, oled_data_burger);
     dist_mem_dessert unit_dessert (pixel_index, oled_data_dessert);
     dist_mem_drink unit_drink (pixel_index, oled_data_drink);
@@ -96,14 +87,14 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             //debouncing
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
             
-            //right arrow
+            //right arrow, if btnR, make it red
             if( (x == 63 && y>=7 && y<= 17) || (x == 64 && y>=8 && y<= 16) || 
                 (x == 65 && y>=9 && y<= 15) || (x == 66 && y>=10 && y<= 14) ||
                 (x == 67 && y>=11 && y<= 13) || (x == 68 && y == 12) )
             begin
                 oled_data <= (right == 1) ? red : black;
             end
-            //left arrow
+            //left arrow, if btnL, make it red
             else if( (x == 29 && y>=7 && y<= 17) || (x == 28 && y>=8 && y<= 16) || 
                 (x == 27 && y>=9 && y<= 15) || (x == 26 && y>=10 && y<= 14) ||
                 (x == 25 && y>=11 && y<= 13) || (x == 24 && y == 12) )
@@ -113,7 +104,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             else
             begin 
                 case(foodSelect)
-                //the rest of the screen is default image
+                    //the rest of the screen is default image
                     3'b000: begin oled_data <= oled_data_pasta;
                     end
                     3'b001: begin oled_data <= oled_data_fruit;
@@ -127,17 +118,8 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
                 endcase
             end
         end
-        else
+        else //when disabled, reset following values
         begin
-//            if (x >= xRangeMin && x<= xRangeMax && y >= yRangeMin && y <= yRangeMax)
-//            begin
-//                oled_data <= white;
-//            end
-//            else
-//            begin
-//                oled_data <= oled_data1;
-//            end
-            
             returnHome <= 0;
             foodSelect <= 3'b000;
         end
