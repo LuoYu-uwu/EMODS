@@ -30,11 +30,9 @@ module Top_Student (
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
-    wire clk_25mhz;
-    wire clk_1000hz;
-    flexible_clock_module unit_b (clock, 1, clk_25mhz);
+    //wire clk_1000hz;
     flexible_clock_module clk_divider_6p25m(clock, 7, clk_6p25m);
-    flexible_clock_module unit_c (clock, 49999, clk_1000hz);
+    //flexible_clock_module unit_c (clock, 49999, clk_1000hz);
         
     wire [2:0] todo;
     reg enable_home; 
@@ -45,15 +43,18 @@ module Top_Student (
         enable_eat = 0;
         activities = 3'b000;
     end
+    
     wire returnHome;
+    wire eating;
+    wire [2:0] increment;
     
     home unit_home(enable_home, returnHome, pixel_index, 
-        btnC, btnL, btnR, btnD, clk_25mhz, oled_data_home, todo);
+        btnC, btnL, btnR, btnD, clock, oled_data_home, todo);
     
-    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clk_25mhz, pixel_index, oled_data_eat, returnHome);
-    
+    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clock, pixel_index, 
+        oled_data_eat, returnHome, eating, increment);
    
-    health_metre unit_health (enable_home, clk_1000hz, led);
+    health_metre unit_health (eating, increment, enable_home, clock, led);
     
     //todo: the activity. left most: 5, right most: 1
     //todo 1: eat

@@ -21,7 +21,8 @@
 
 
 module eat(input enable, input btnC, input btnL, input btnR, input btnD,
-    input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output return);
+    input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output return,
+    output reg eating = 0, output reg [2:0] increase = 0);
     
     
     parameter green = 16'b00000_111111_00000;
@@ -37,10 +38,12 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     
     reg [2:0] foodSelect; //type of food to be selected
     reg returnHome;
-    reg [31:0] count;
+    reg [31:0] count, pause;
+    
     initial begin
         foodSelect = 3'b000;
         count = 0;
+        pause = 0;
         returnHome = 0;
     end
     
@@ -48,6 +51,8 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     
     wire clk_1000hz;
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
+    wire clk_25mhz;
+    flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
     reg [15:0] oled_data1;
     wire [15:0] oled_data_pasta, oled_data_fruit, oled_data_burger, oled_data_dessert, oled_data_drink;
@@ -61,11 +66,13 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     
     detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
-    always @ (posedge clock)
+    always @ (posedge clk_25mhz)
     begin
         //check if shld be eating
         if (enable == 1)
         begin
+            //manually wait and dont detect centre buttons first, for 1s
+            pause <= (pause == 25000000) ? pause : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -83,6 +90,17 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
                 //go back home
                 count = count + 1;
                 returnHome <= 1;
+            end
+            if (centre == 1 && count == 0 && pause == 25000000)
+            begin
+                //signal the start of increment of health based on the food
+                count = count + 1;
+                //enable the increment
+                eating <= 1;
+            end
+            else
+            begin
+                eating <= 0;
             end
             //debouncing
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
@@ -105,23 +123,31 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             begin 
                 case(foodSelect)
                     //the rest of the screen is default image
-                    3'b000: begin oled_data <= oled_data_pasta;
+                    3'b000: begin oled_data <= oled_data_pasta; //+5
+                            increase <= 5; //set amount of increment based on food
                     end
-                    3'b001: begin oled_data <= oled_data_fruit;
+                    3'b001: begin oled_data <= oled_data_fruit; //+3
+                            increase <= 3;
                     end
-                    3'b010: begin oled_data <= oled_data_burger;
+                    3'b010: begin oled_data <= oled_data_burger; //+5
+                            increase <= 5;
                     end
-                    3'b011: begin oled_data <= oled_data_dessert;
+                    3'b011: begin oled_data <= oled_data_dessert; //+4
+                            increase <= 4;
                     end
-                    3'b100: begin oled_data <= oled_data_drink;
+                    3'b100: begin oled_data <= oled_data_drink; //+2
+                            increase <= 2;
                     end
                 endcase
             end
+            
         end
         else //when disabled, reset following values
         begin
             returnHome <= 0;
             foodSelect <= 3'b000;
+            increase <= 0;
+            pause <= 0;
         end
     end
     

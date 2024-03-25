@@ -50,14 +50,17 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     reg [6:0] yDU = 15;
     
     reg [2:0] activity;
-    reg [31:0] count;
+    reg [31:0] count, pause;
     initial begin
         activity = 0;
         count = 0;
+        pause = 0;
     end
     
     wire clk_1000hz;
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
+    wire clk_25mhz;
+    flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
     wire [15:0] oled_data1;
     wire left, right, centre, down;
@@ -66,11 +69,13 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     
     detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
-    always @ (posedge clock)
+    always @ (posedge clk_25mhz)
     begin
         //check if go back home screen
         if (enable == 1)
         begin
+            //manually wait and dont detect centre buttons first, for 1s
+            pause <= (pause == 25000000) ? pause : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -97,7 +102,7 @@ module home(input enable, input return_home, input [12:0] pixel_index,
                 activity <= (activity == 0) ? 4 : activity - 1;
             end
             //when centre button is pushed
-            if (centre == 1 && count == 0)
+            if (centre == 1 && count == 0 && pause == 25000000)
             begin
                 //output the selected activity
                 count = count + 1;
@@ -144,6 +149,7 @@ module home(input enable, input return_home, input [12:0] pixel_index,
                 todo <= 0;
             end
             //todo <= 0;
+            pause <= 0;
         end
     end
     
