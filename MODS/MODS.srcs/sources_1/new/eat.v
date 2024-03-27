@@ -72,7 +72,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
         if (enable == 1)
         begin
             //manually wait and dont detect centre buttons first, for 1s
-            pause <= (pause == 25000000) ? pause : pause + 1;
+            pause <= (pause == 5000001) ? 0 : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -91,7 +91,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
                 count = count + 1;
                 returnHome <= 1;
             end
-            if (centre == 1 && count == 0 && pause == 25000000)
+            if (centre == 1 && count == 0 && pause == 5000001)
             begin
                 //signal the start of increment of health based on the food
                 count = count + 1;
@@ -147,7 +147,6 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             returnHome <= 0;
             foodSelect <= 3'b000;
             increase <= 0;
-            pause <= 0;
         end
     end
     
