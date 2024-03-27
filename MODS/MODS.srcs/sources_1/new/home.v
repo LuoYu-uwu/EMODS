@@ -36,19 +36,13 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     assign x = pixel_index % 96;
     assign y = pixel_index / 96;
     
-    reg [7:0] xLL = 69;
-    reg [7:0] xLR = 71;
-    reg [7:0] xRR = 84;
-    reg [7:0] xRL = 82;
-    reg [7:0] xRangeMin = 69;
-    reg [7:0] xRangeMax = 84;
-    reg [6:0] yRangeMin = 2;
-    reg [6:0] yRangeMax = 17;
-    reg [6:0] yUU = 2;
-    reg [6:0] yUD = 4; 
-    reg [6:0] yDD = 17;
-    reg [6:0] yDU = 15;
-    
+    reg [7:0] xVerticalLeft = 75;
+    reg [7:0] xVerticalRight = 92;
+    reg [7:0] xLL = 72;
+    reg [7:0] xLR = 75;
+    reg [7:0] xRL = 92;
+    reg [7:0] xRR = 95;
+
     reg [2:0] activity;
     reg [31:0] count, pause;
     initial begin
@@ -81,25 +75,25 @@ module home(input enable, input return_home, input [12:0] pixel_index,
             begin
                 //loop back to most right if alr at most left
                 count = count + 1;
-                xLL <= (xLL == 9) ? 69 : xLL - 15;
-                xLR <= (xLR == 11) ? 71 : xLR - 15;
-                xRR <= (xRR == 24) ? 84 : xRR - 15;
-                xRL <= (xRL == 22) ? 82 : xRL - 15;
-                xRangeMin <= (xRangeMin == 9) ? 69 : xRangeMin - 15;
-                xRangeMax <= (xRangeMax == 24) ? 84 : xRangeMax - 15;
-                activity <= (activity == 4) ? 0 : activity + 1; 
+                xVerticalLeft <= (xVerticalLeft == 3) ? 75 : xVerticalLeft - 24;
+                xVerticalRight <= (xVerticalRight == 20) ? 92 : xVerticalRight - 24;
+                xLL <= (xLL == 0) ? 72 : xLL - 24;
+                xLR <= (xLR == 3) ? 75 : xLR - 24;
+                xRL <= (xRL == 20) ? 92 : xRL - 24;
+                xRR <= (xRR == 23) ? 95 : xRR - 24;
+                activity <= (activity == 3) ? 0 : activity + 1; 
             end
             //when right button is pushed
             if (right == 1 && count == 0)
             begin
                 count = count + 1;
-                xLL <= (xLL == 69) ? 9 : xLL + 15;
-                xLR <= (xLR == 71) ? 11 : xLR + 15;
-                xRR <= (xRR == 84) ? 24 : xRR + 15;
-                xRL <= (xRL == 82) ? 22 : xRL + 15;
-                xRangeMin <= (xRangeMin == 69) ? 9 : xRangeMin + 15;
-                xRangeMax <= (xRangeMax == 84) ? 24 : xRangeMax + 15;
-                activity <= (activity == 0) ? 4 : activity - 1;
+                xVerticalLeft <= (xVerticalLeft == 75) ? 3 : xVerticalLeft + 24;
+                xVerticalRight <= (xVerticalRight == 92) ? 20 : xVerticalRight + 24;
+                xLL <= (xLL == 72) ? 0 : xLL + 24;
+                xLR <= (xLR == 75) ? 3 : xLR + 24;
+                xRL <= (xRL == 92) ? 20 : xRL + 24;
+                xRR <= (xRR == 95) ? 23 : xRR +  24;
+                activity <= (activity == 0) ? 3 : activity - 1;
             end
             //when centre button is pushed
             if (centre == 1 && count == 0 && pause == 25000000)
@@ -114,17 +108,10 @@ module home(input enable, input return_home, input [12:0] pixel_index,
             end
             //debouncing
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
-            //set 5 boxes to choose activities
-            if ( (x >= 44 && x<= 49 || x>=29 && x<= 34 || x >= 14 && x <=19 
-               || x >=59 && x <= 64 || x>= 74 && x<= 79) && y >= 7 && y <= 12 )
+            if(((x == xVerticalLeft || x == xVerticalRight) && ((y>=0 && y<=3) || (y>=20 && y<=23) )) ||
+                ( (y==3 || y==20) && ( (x>= xLL && x<= xLR) || (x >= xRL && x <= xRR) ) ) )
             begin
                 oled_data <= black;
-            end
-            //set border location based on left and right button
-            else if ( ( (x>= xLL && x<= xLR || x >= xRL && x<= xRR ) && y >= yRangeMin && y <= yRangeMax)
-                 || ( x>= xRangeMin && x<= xRangeMax && (y >= yUU && y<= yUD || y>= yDU && y<=yDD) ) )
-            begin
-                oled_data <= red;
             end
             else
             begin

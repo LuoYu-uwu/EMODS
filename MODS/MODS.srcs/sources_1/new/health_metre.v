@@ -31,11 +31,12 @@ module health_metre(input eating, input [2:0] increment, input enable,
     
     always @ (posedge clk_25mhz)
     begin
+        //shld decrease health by 1 for every 4 sec
         counts <= (enable == 1 && counts != 100000000) ? counts + 1 : 0;
         decrease <= (counts == 100000000) ? 1 : 0;
         if(decrease == 1)
         begin
-            led <= led >> 1;
+            led <= led >> 1; //bitwise shift
         end
         else
         begin
