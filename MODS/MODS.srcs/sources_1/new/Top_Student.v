@@ -27,6 +27,7 @@ module Top_Student (
     reg [15:0] oled_data;
     wire [15:0] oled_data_eat;
     wire [15:0] oled_data_home;
+    wire [15:0] oled_data_sleep;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
@@ -37,6 +38,7 @@ module Top_Student (
     wire [2:0] todo;
     reg enable_home; 
     reg enable_eat;
+    reg enable_sleep;
     reg [2:0] activities;
     initial begin
         enable_home = 1;
@@ -45,6 +47,9 @@ module Top_Student (
     end
     
     wire returnHome;
+    wire sleepToHome;
+    wire eatToHome;
+    assign returnHome = sleepToHome || eatToHome;
     wire eating;
     wire [2:0] increment;
     
@@ -52,9 +57,12 @@ module Top_Student (
         btnC, btnL, btnR, btnD, clock, oled_data_home, todo);
     
     eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clock, pixel_index, 
-        oled_data_eat, returnHome, eating, increment);
+        oled_data_eat, eatToHome, eating, increment);
    
-    health_metre unit_health (eating, increment, enable_home, clock, led);
+    health_metre unit_health(eating, increment, enable_home, clock, led);
+    
+    sleep unit_sleep(enable_sleep, btnC, btnL, btnR, btnD, 
+        clock, pixel_index, oled_data_sleep, sleepToHome);
     
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 1: eat
@@ -77,12 +85,21 @@ module Top_Student (
         begin
             enable_eat <= 1;
             enable_home <= 0;
+            enable_sleep<=0;
             oled_data <= oled_data_eat;
+        end
+        else if (activities == 2)
+        begin
+            enable_eat<=0;
+            enable_home<=0;
+            enable_sleep<=1;
+            oled_data <= oled_data_sleep;
         end
         else
         begin
             enable_home <= 1;
             enable_eat <= 0;
+            enable_sleep <= 0;
             oled_data <= oled_data_home;
         end
     end

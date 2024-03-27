@@ -69,7 +69,7 @@ module home(input enable, input return_home, input [12:0] pixel_index,
         if (enable == 1)
         begin
             //manually wait and dont detect centre buttons first, for 1s
-            pause <= (pause == 25000000) ? pause : pause + 1;
+            pause <= (pause == 5000001) ? pause : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -95,12 +95,19 @@ module home(input enable, input return_home, input [12:0] pixel_index,
                 xRR <= (xRR == 95) ? 23 : xRR +  24;
                 activity <= (activity == 0) ? 3 : activity - 1;
             end
-            //when centre button is pushed
-            if (centre == 1 && count == 0 && pause == 25000000)
+            //when centre button is pushed 25000000
+            if (centre == 1 && count == 0)
             begin
                 //output the selected activity
                 count = count + 1;
-                todo <= activity + 1;
+                if(activity == 0 && pause == 5000001) 
+                begin
+                    todo <= activity + 1;
+                end
+                else if(activity != 0)
+                begin
+                    todo <= activity + 1;
+                end
             end
             else
             begin
@@ -130,12 +137,10 @@ module home(input enable, input return_home, input [12:0] pixel_index,
             begin
                 oled_data <= oled_data1;
             end
-            activity <= 0;
             if (return_home == 1)
             begin
                 todo <= 0;
             end
-            //todo <= 0;
             pause <= 0;
         end
     end
