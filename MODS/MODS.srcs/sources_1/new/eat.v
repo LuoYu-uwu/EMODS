@@ -24,11 +24,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output return,
     output reg eating = 0, output reg [2:0] increase = 0);
     
-    
-    parameter green = 16'b00000_111111_00000;
-    parameter white = 16'b11111_111111_11111;
     parameter red = 16'b11111_000000_00000;
-    parameter blue = 16'b00000_000000_11111;
     parameter black = 16'b0;
     
     wire [7:0] x;
@@ -73,6 +69,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
         begin
             //manually wait and dont detect centre buttons first, for 1s
             pause <= (pause == 5000001) ? 0 : pause + 1;
+            
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -147,6 +144,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
             returnHome <= 0;
             foodSelect <= 3'b000;
             increase <= 0;
+            pause <= 0;
         end
     end
     

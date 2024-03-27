@@ -23,11 +23,8 @@
 module detect_button(input enable, input btnC, input btnL, input btnR, input btnD, input clock, 
     output reg left = 0, output reg right = 0, output reg centre = 0, output reg down = 0);
 
-    //reg [31:0] count = 0;
-    
     always @(posedge clock)
     begin
-        //check if go back home screen
         if (enable == 1)
             begin
             if(btnC == 1)

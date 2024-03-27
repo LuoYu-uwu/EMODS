@@ -43,56 +43,48 @@ module Top_Student (
     initial begin
         enable_home = 1;
         enable_eat = 0;
+        enable_sleep = 0;
         activities = 3'b000;
     end
     
     wire returnHome;
     wire sleepToHome;
     wire eatToHome;
-    assign returnHome = sleepToHome || eatToHome;
-    wire eating;
+    wire goSleep;
+    assign returnHome = (sleepToHome || eatToHome);
+    wire eating, sleeping;
     wire [2:0] increment;
     
-    home unit_home(enable_home, returnHome, pixel_index, 
+    home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, clock, oled_data_home, todo);
     
     eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clock, pixel_index, 
         oled_data_eat, eatToHome, eating, increment);
    
-    health_metre unit_health(eating, increment, enable_home, clock, led);
+    health_metre unit_health(eating, sleeping, increment, enable_home, clock, led, goSleep);
     
-    sleep unit_sleep(enable_sleep, btnC, btnL, btnR, btnD, 
-        clock, pixel_index, oled_data_sleep, sleepToHome);
+    sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
     //todo: the activity show in icon! left most: 4, right most: 1
+    //todo 0: return home
     //todo 1: eat
     //todo 2: sleep
     //todo 3: go work
     //todo 4: change clothes
     
-    //activity: basically todo's value
-    //but if returnHome = 1, set activity to 0
-    //activity = 0 means should go back homescreen
     always @ (posedge clock) begin
-        if (returnHome == 1)
-        begin
-            activities <= 0;
-        end 
-        else begin
-            activities <= todo;
-        end
-        if (activities == 1)
+        if (todo == 1)
         begin
             enable_eat <= 1;
             enable_home <= 0;
             enable_sleep<=0;
             oled_data <= oled_data_eat;
         end
-        else if (activities == 2)
+        else if (todo == 2)
         begin
-            enable_eat<=0;
-            enable_home<=0;
-            enable_sleep<=1;
+            enable_eat <= 0;
+            enable_home <= 0;
+            enable_sleep <= 1;
             oled_data <= oled_data_sleep;
         end
         else
