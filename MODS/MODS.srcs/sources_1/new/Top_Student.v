@@ -56,12 +56,11 @@ module Top_Student (
    
     health_metre unit_health (eating, increment, enable_home, clock, led);
     
-    //todo: the activity. left most: 5, right most: 1
+    //todo: the activity show in icon! left most: 4, right most: 1
     //todo 1: eat
     //todo 2: sleep
-    //todo 3: bath
-    //todo 4: go work
-    //todo 5: change clothes
+    //todo 3: go work
+    //todo 4: change clothes
     
     //activity: basically todo's value
     //but if returnHome = 1, set activity to 0
@@ -70,7 +69,6 @@ module Top_Student (
         if (returnHome == 1)
         begin
             activities <= 0;
-            //oled_data <= oled_data_home;
         end 
         else begin
             activities <= todo;
