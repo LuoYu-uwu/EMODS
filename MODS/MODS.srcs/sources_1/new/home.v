@@ -65,7 +65,7 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     wire [15:0] oled_data1;
     wire left, right, centre, down;
     
-    dist_mem_hs unit_home (pixel_index, oled_data1);
+    home_image unit_home(pixel_index, clk_25mhz, oled_data1);
     
     detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 

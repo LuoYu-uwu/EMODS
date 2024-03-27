@@ -58,11 +58,11 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     wire [15:0] oled_data_pasta, oled_data_fruit, oled_data_burger, oled_data_dessert, oled_data_drink;
     wire left, right, centre, down;
     
-    dist_mem_burger unit_burger(pixel_index, oled_data_burger);
-    dist_mem_dessert unit_dessert (pixel_index, oled_data_dessert);
-    dist_mem_drink unit_drink (pixel_index, oled_data_drink);
-    dist_mem_fruit unit_fruitkitchen (pixel_index, oled_data_fruit);
-    dist_mem_pasta unit_pasta (pixel_index, oled_data_pasta);
+    kitchen_burger unit_burger(pixel_index, clk_25mhz, oled_data_burger);
+    kitchen_dessert unit_dessert (pixel_index, clk_25mhz, oled_data_dessert);
+    kitchen_drink unit_drink (pixel_index, clk_25mhz, oled_data_drink);
+    kitchen_fruit unit_fruitkitchen (pixel_index, clk_25mhz, oled_data_fruit);
+    kitchen_pasta unit_pasta (pixel_index, clk_25mhz, oled_data_pasta);
     
     detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
 
