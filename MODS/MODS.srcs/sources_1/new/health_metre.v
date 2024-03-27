@@ -20,14 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module health_metre(input eating, input [2:0] increment, input enable, 
-    input clock, output reg [15:0] led = 1);
+module health_metre(input eating, input sleeping, input [2:0] increment, input enable, 
+    input clock, output reg [15:0] led = 1, output reg sleep = 0);
     
     wire clk_25mhz;
     flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
     reg decrease;
     reg [31:0] counts = 0;
+    reg [1:0] ctr = 0;
+    reg [31:0] pause = 0;
     
     always @ (posedge clk_25mhz)
     begin
@@ -42,6 +44,7 @@ module health_metre(input eating, input [2:0] increment, input enable,
         begin
             led <= led;
         end
+        
         //if food is selected, increase health based on food
         if(eating == 1)
         begin
@@ -55,6 +58,34 @@ module health_metre(input eating, input [2:0] increment, input enable,
                 3'b010: begin led <= (led << 2) | 16'b0000000000000011; //+2
                 end
             endcase
+        end
+        
+        if(sleeping == 1)
+        begin
+            //ensure that only add health ONCE when sleeping
+            ctr <= (ctr == 2) ? ctr : ctr + 1;
+            if(ctr == 1)
+            begin
+                led <= (led << 3) | 16'b0000000000000111; //+3
+            end
+        end
+        else
+        begin
+            ctr <= 0;
+        end
+        //if health = 0, wait for 1s, then go to sleep to boost health
+        if(led == 0)
+        begin
+            pause <= (pause == 25000000) ? pause : pause + 1;
+            if(pause == 25000000)
+            begin
+                sleep <= 1;
+            end
+        end
+        else
+        begin
+            sleep <= 0;
+            pause <=0 ;
         end
     end
     

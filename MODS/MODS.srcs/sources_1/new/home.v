@@ -20,15 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module home(input enable, input return_home, input [12:0] pixel_index, 
+module home(input enable, input goSleep, input return_home, input [12:0] pixel_index, 
     input btnC, input btnL, input btnR, input btnD,
     input clock, output reg [15:0] oled_data = 0, 
     output reg [2:0] todo = 0);
     
-    parameter green = 16'b00000_111111_00000;
-    parameter white = 16'b11111_111111_11111;
-    parameter red = 16'b11111_000000_00000;
-    parameter blue = 16'b00000_000000_11111;
     parameter black = 16'b0;
     
     wire [7:0] x;
@@ -44,11 +40,10 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     reg [7:0] xRR = 95;
 
     reg [2:0] activity;
-    reg [31:0] count, pause;
+    reg [31:0] count;
     initial begin
         activity = 0;
         count = 0;
-        pause = 0;
     end
     
     wire clk_1000hz;
@@ -61,15 +56,13 @@ module home(input enable, input return_home, input [12:0] pixel_index,
     
     home_image unit_home(pixel_index, clk_25mhz, oled_data1);
     
-    detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
+    detect_button unit_button1 (enable, btnC, btnL, btnR, btnD, clock, left, right, centre, down);
 
     always @ (posedge clk_25mhz)
     begin
         //check if go back home screen
         if (enable == 1)
         begin
-            //manually wait and dont detect centre buttons first, for 1s
-            pause <= (pause == 5000001) ? pause : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0)
             begin
@@ -100,14 +93,11 @@ module home(input enable, input return_home, input [12:0] pixel_index,
             begin
                 //output the selected activity
                 count = count + 1;
-                if(activity == 0 && pause == 5000001) 
-                begin
-                    todo <= activity + 1;
-                end
-                else if(activity != 0)
-                begin
-                    todo <= activity + 1;
-                end
+                todo <= activity + 1;
+            end
+            else if(goSleep == 1)
+            begin
+                todo <= 2;
             end
             else
             begin
@@ -128,20 +118,11 @@ module home(input enable, input return_home, input [12:0] pixel_index,
         end
         else
         begin
-            if ( (x >= 44 && x<= 49 || x>=29 && x<= 34 || x >= 14 && x <=19 
-                || x >=59 && x <= 64 || x>= 74 && x<= 79) && y >= 7 && y <= 12 )
-            begin
-                oled_data <= white;
-            end
-            else
-            begin
-                oled_data <= oled_data1;
-            end
             if (return_home == 1)
             begin
                 todo <= 0;
             end
-            pause <= 0;
+            count <= 0;
         end
     end
     
