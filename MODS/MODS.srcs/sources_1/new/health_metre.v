@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module health_metre(input eating, input sleeping, input [2:0] increment, input enable, 
+module health_metre(input eating, input sleeping, input bathing, input [2:0] increment, input enable, 
     input clock, output reg [15:0] led = 1, output reg sleep = 0);
     
     wire clk_25mhz;
@@ -67,6 +67,15 @@ module health_metre(input eating, input sleeping, input [2:0] increment, input e
             if(ctr == 1)
             begin
                 led <= (led << 3) | 16'b0000000000000111; //+3
+            end
+        end
+        else if(bathing == 1)
+        begin
+            //ensure that only add health ONCE when bathing
+            ctr <= (ctr == 2) ? ctr : ctr + 1;
+            if(ctr == 1)
+            begin
+                led <= (led << 2) | 16'b0000000000000011; //+2
             end
         end
         else

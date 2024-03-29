@@ -29,6 +29,7 @@ module Top_Student (
     wire [15:0] oled_data_home;
     wire [15:0] oled_data_sleep;
     wire [15:0] oled_data_closet;
+    wire [15:0] oled_data_bath;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
@@ -41,6 +42,7 @@ module Top_Student (
     reg enable_eat;
     reg enable_sleep;
     reg enable_closet;
+    reg enable_bath;
     reg [2:0] activities;
     
     initial begin
@@ -48,6 +50,7 @@ module Top_Student (
         enable_eat = 0;
         enable_sleep = 0;
         enable_closet = 0;
+        enable_bath = 0;
         activities = 3'b000;
     end
     
@@ -55,20 +58,23 @@ module Top_Student (
     wire sleepToHome;
     wire eatToHome;
     wire closetToHome;
+    wire bathToHome;
     wire goSleep;
-    assign returnHome = (sleepToHome || eatToHome || closetToHome);
-    wire eating, sleeping;
+    assign returnHome = (sleepToHome || eatToHome || closetToHome || bathToHome);
+    wire eating, sleeping, bathing;
     wire [2:0] increment;
     
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
-        btnC, btnL, btnR, btnD, clock, oled_data_home, todo);
+        btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
     
-    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, clock, pixel_index, 
+    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
         oled_data_eat, eatToHome, eating, increment);
    
-    health_metre unit_health(eating, sleeping, increment, enable_home, clock, led, goSleep);
+    health_metre unit_health(eating, sleeping, bathing, increment, enable_home, clock, led, goSleep);
     
     sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
+    
+    bath unit_bath(enable_bath, clock, pixel_index, oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD,
     pixel_index, closetToHome, oled_data_closet);
@@ -79,6 +85,7 @@ module Top_Student (
     //todo 2: sleep
     //todo 3: go work
     //todo 4: change clothes
+    //todo 5: shower
     
     always @ (posedge clock) begin
         if (todo == 1)
@@ -87,6 +94,7 @@ module Top_Student (
             enable_home <= 0;
             enable_sleep <= 0;
             enable_closet <= 0;
+            enable_bath <= 0;
             oled_data <= oled_data_eat;
         end
         else if (todo == 2)
@@ -95,6 +103,7 @@ module Top_Student (
             enable_home <= 0;
             enable_sleep <= 1;
             enable_closet <= 0;
+            enable_bath <= 0;
             oled_data <= oled_data_sleep;
         end
         else if (todo == 4)
@@ -103,7 +112,17 @@ module Top_Student (
             enable_home <= 0;
             enable_sleep <= 0;
             enable_closet <= 1;
+            enable_bath <= 0;
             oled_data <= oled_data_closet;
+        end
+        else if (todo == 5)
+        begin
+            enable_eat <= 0;
+            enable_home <= 0;
+            enable_sleep <= 0;
+            enable_closet <= 0;
+            enable_bath <= 1;
+            oled_data <= oled_data_bath;
         end
         else
         begin
@@ -111,6 +130,7 @@ module Top_Student (
             enable_eat <= 0;
             enable_sleep <= 0;
             enable_closet <= 0;
+            enable_bath <= 0;
             oled_data <= oled_data_home;
         end
     end
