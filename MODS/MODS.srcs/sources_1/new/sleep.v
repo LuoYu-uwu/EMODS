@@ -23,7 +23,6 @@
 module sleep(input enable, input clock, input [12:0] pixel_index, 
     output reg [15:0] oled_data = 0, output return, output reg increase = 0);
     
-    
     wire clk_25mhz;
     flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
@@ -134,7 +133,7 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                 //go back home
                 returnHome <= 1;
             end
-            //sleep for 4 seconds
+            //sleep for 5 seconds
             count <= (count == 125000001) ? count : count + 1;
         end
         else

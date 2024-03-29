@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module eat(input enable, input btnC, input btnL, input btnR, input btnD,
+module eat(input enable, input btnC, input btnL, input btnR, input btnD, input btnU,
     input clock, input [12:0] pixel_index, output reg [15:0] oled_data = 0, output return,
     output reg eating = 0, output reg [2:0] increase = 0);
     
@@ -54,7 +54,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     
     //selecting food
     wire [15:0] oled_data_pasta, oled_data_fruit, oled_data_burger, oled_data_dessert, oled_data_drink;
-    wire left, right, centre, down;
+    wire left, right, centre, down, up;
     
     kitchen_burger unit_burger(pixel_index, clk_25mhz, oled_data_burger);
     kitchen_dessert unit_dessert (pixel_index, clk_25mhz, oled_data_dessert);
@@ -62,7 +62,8 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD,
     kitchen_fruit unit_fruitkitchen (pixel_index, clk_25mhz, oled_data_fruit);
     kitchen_pasta unit_pasta (pixel_index, clk_25mhz, oled_data_pasta);
     
-    detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
+    detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, btnU, 
+        clk_25mhz, left, right, centre, down, up);
 
     //for drool
     reg [6:0] ymin = 48;
