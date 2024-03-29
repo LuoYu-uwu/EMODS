@@ -70,8 +70,8 @@ module Top_Student (
     
     sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
-    closet unit_closet(enable_closet, clock, closetToHome, btnC, btnR, btnD, 
-    pixel_index, oled_data_closet);
+    closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD,
+    pixel_index, closetToHome, oled_data_closet);
     
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
