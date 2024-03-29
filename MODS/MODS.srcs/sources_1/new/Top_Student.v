@@ -28,6 +28,7 @@ module Top_Student (
     wire [15:0] oled_data_eat;
     wire [15:0] oled_data_home;
     wire [15:0] oled_data_sleep;
+    wire [15:0] oled_data_closet;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
@@ -39,19 +40,23 @@ module Top_Student (
     reg enable_home; 
     reg enable_eat;
     reg enable_sleep;
+    reg enable_closet;
     reg [2:0] activities;
+    
     initial begin
         enable_home = 1;
         enable_eat = 0;
         enable_sleep = 0;
+        enable_closet = 0;
         activities = 3'b000;
     end
     
     wire returnHome;
     wire sleepToHome;
     wire eatToHome;
+    wire closetToHome;
     wire goSleep;
-    assign returnHome = (sleepToHome || eatToHome);
+    assign returnHome = (sleepToHome || eatToHome || closetToHome);
     wire eating, sleeping;
     wire [2:0] increment;
     
@@ -65,6 +70,9 @@ module Top_Student (
     
     sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
+    closet unit_closet(enable_closet, clock, closetToHome, btnC, btnR, btnD, 
+    pixel_index, oled_data_closet);
+    
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
     //todo 1: eat
@@ -77,7 +85,8 @@ module Top_Student (
         begin
             enable_eat <= 1;
             enable_home <= 0;
-            enable_sleep<=0;
+            enable_sleep <= 0;
+            enable_closet <= 0;
             oled_data <= oled_data_eat;
         end
         else if (todo == 2)
@@ -85,13 +94,23 @@ module Top_Student (
             enable_eat <= 0;
             enable_home <= 0;
             enable_sleep <= 1;
+            enable_closet <= 0;
             oled_data <= oled_data_sleep;
+        end
+        else if (todo == 4)
+        begin
+            enable_eat <= 0;
+            enable_home <= 0;
+            enable_sleep <= 0;
+            enable_closet <= 1;
+            oled_data <= oled_data_closet;
         end
         else
         begin
             enable_home <= 1;
             enable_eat <= 0;
             enable_sleep <= 0;
+            enable_closet <= 0;
             oled_data <= oled_data_home;
         end
     end
