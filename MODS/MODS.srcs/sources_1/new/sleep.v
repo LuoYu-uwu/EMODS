@@ -86,7 +86,8 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                     y13 <= y13 - 1;
                     y14 <= y14 - 1;
                 end
-                32'd100000011: begin
+                //32'd100000011: begin
+                32'd105000000: begin
                     y4 <= 4;
                     y5 <= 5;
                     y6 <= 6;
@@ -142,16 +143,6 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
             returnHome <= 0;
             increase <= 0;
             count <= 0;
-            y4 <= 4;
-            y5 <= 5;
-            y6 <= 6;
-            y7 <= 7;
-            y8 <= 8;
-            y10 <= 10;
-            y11 <= 11;
-            y12 <= 12;
-            y13 <= 13;
-            y14 <= 14;
         end
     end
     
