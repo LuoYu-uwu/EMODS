@@ -23,6 +23,7 @@ module closet_image(input [12:0] pixel_index, input clock, output reg [15:0] ole
 
     always @(posedge clock)
     begin
+   
         case(pixel_index)
             13'b0000000000000: begin oled_data <= 16'hCB68;
             end

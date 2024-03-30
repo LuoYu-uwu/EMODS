@@ -22,7 +22,7 @@
 
 module closet(
     input enable, input clock, 
-    input btnC, btnL, btnR, btnD,
+    input btnC, btnL, btnR, btnD, btnU,
     input [12:0] pixel_index,
     output return,
     output reg [15:0] oled_data = 0);
@@ -33,11 +33,14 @@ module closet(
     wire clk_1000hz;
     wire clk_25mhz;
     
-    wire [15:0] oled_data_1;
-    wire left, right, centre, down;
+    wire [15:0] oled_data_0, oled_data_1, oled_data_2, oled_data_3, oled_data_4;
+    wire [15:0] oled_data_5, oled_data_6, oled_data_7, oled_data_8, oled_data_9;
+    wire left, right, centre, down, up;
     
     wire [7:0] x;
     wire [6:0] y;
+    
+    parameter green = 16'b00000_111111_00000;
     
     assign x = pixel_index % 96;
     assign y = pixel_index / 96;
@@ -45,8 +48,11 @@ module closet(
     flexible_clock_module unit_c (clock, 49999, clk_1000hz);
     flexible_clock_module unit_b (clock, 1, clk_25mhz);
 
-    closet_image unit_closet(pixel_index, clk_25mhz, oled_data_1);
-    detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, clk_1000hz, left, right, centre, down);
+    closet_image unit_closet(pixel_index, clk_25mhz, oled_data_0);
+    outfit_1 unit_outfit1(pixel_index, clk_25mhz, oled_data_1);
+    
+    detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
+    clk_25mhz, left, right, centre, down, up);
     
     initial begin
         pause = 0;
@@ -68,8 +74,13 @@ module closet(
             
             //debouncing
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
-        
-            oled_data <= oled_data_1;
+            
+            if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
+                oled_data <= oled_data_1;
+            end 
+            else begin
+                oled_data <= oled_data_0;
+            end
         end
         
         else begin
