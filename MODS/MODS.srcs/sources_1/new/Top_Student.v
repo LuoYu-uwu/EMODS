@@ -74,7 +74,8 @@ module Top_Student (
     
 //    sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
-//    bath unit_bath(enable_bath, clock, pixel_index, oled_data_bath, bathToHome, bathing);
+//    bath unit_bath(enable_bath, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
+//        oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU,
     pixel_index, closetToHome, oled_data_closet);

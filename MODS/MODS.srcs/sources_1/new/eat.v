@@ -249,7 +249,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             begin
                 oled_data <= lightRed;
             end
-            else
+            else if (x >= 34 && x<=56 && y >= 1 && y <=45 )
             begin 
                 case(foodSelect)
                     //the rest of the screen is default image
@@ -269,6 +269,10 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
                             increase <= 2;
                     end
                 endcase
+            end
+            else
+            begin
+                oled_data <= oled_data_pasta;
             end
             
         end
