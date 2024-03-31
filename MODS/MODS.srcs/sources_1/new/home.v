@@ -47,10 +47,11 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
     reg [6:0] yDD = 23;
 
     reg [2:0] activity;
-    reg [31:0] count;
+    reg [31:0] count, pause;
     initial begin
         activity = 0;
         count = 0;
+        pause = 0;
     end
     
     wire clk_1000hz;
@@ -71,6 +72,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
         //check if go back home screen
         if (enable == 1)
         begin
+            pause <= (pause == 5000000) ? pause : pause + 1;
             //when left button is pushed
             if (left == 1 && count == 0 && activity != 4)
             begin
@@ -98,7 +100,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
                 activity <= (activity == 0) ? 3 : activity - 1;
             end
             //if down is pressed, only can press if at closet (activity 3)
-            if (down == 1 && count == 0 && xVerticalLeft == 3)
+            if (down == 1 && count == 0 && xVerticalLeft == 3 && pause == 5000000)
             begin
                 count = count + 1;
                 yUp <= (yUp == 43) ? 3 : yUp + 40;
@@ -107,7 +109,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
                 yUD <= (yUD == 43) ? 3 : yUD + 40;
                 yDU <= (yDU == 60) ? 20 :  yDU + 40;
                 yDD <= (yDD == 63) ? 23 : yDD + 40;
-                activity <= (activity ==3) ? 4 : 3;
+                activity <= (activity ==4) ? 3 : activity+1;
             end
             
             //if up is pressed, only can press if at shower (activity 4)
@@ -120,7 +122,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
                 yUD <= (yUD == 3) ? 43 : yUD - 40;
                 yDU <= (yDU == 20) ? 60 :  yDU - 40;
                 yDD <= (yDD == 23) ? 63 : yDD - 40;
-                activity <= (activity ==4) ? 3 : 4;
+                activity <= (activity ==3) ? 4 : activity - 1;
             end
             
             //when centre button is pushed
@@ -160,6 +162,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
                 todo <= 0;
             end
             count <= 0;
+            pause <= 0;
         end
     end
     

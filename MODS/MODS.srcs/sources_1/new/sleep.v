@@ -30,9 +30,10 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
     reg returnHome = 0;
     assign return = returnHome;
     reg [31:0] count = 0;
+    //reg wakeUp = 0;
     
-    //default sleeping image
     wire [15:0] oled_data_sleep, oled_data_wake;
+    //sleep_switch unit_sleep(wakeUp, pixel_index, clk_25mhz, oled_data_sleep);
     sleep_image unit_sleep(pixel_index, clk_25mhz, oled_data_sleep);
     waking_image unit_wake(pixel_index, clk_25mhz, oled_data_wake);
     
@@ -97,6 +98,7 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                     y12 <= 12;
                     y13 <= 13;
                     y14 <= 14;
+                    //wakeUp <= 1;
                 end
             endcase
             if(count <= 105000000)
@@ -142,6 +144,7 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
             returnHome <= 0;
             increase <= 0;
             count <= 0;
+            //wakeUp <= 0;
         end
     end
     
