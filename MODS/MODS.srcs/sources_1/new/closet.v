@@ -25,11 +25,16 @@ module closet(
     input btnC, btnL, btnR, btnD, btnU,
     input [12:0] pixel_index,
     output return,
+    output reg [3:0] an,
+    output reg [6:0] seg,
     output reg [15:0] oled_data = 0);
     
     reg returnHome;
     reg [3:0] outfit_number;
     reg [31:0] count;
+    
+    reg [3:0] an_outfit = 4'b1110;
+    reg [3:0] an_hat = 4'b1101;
     
     wire clk_1000hz;
     wire clk_25mhz;
@@ -37,6 +42,8 @@ module closet(
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire left, right, centre, down, up;
+    
+    wire [6:0] seg_outfit, seg_hat;
     
     wire [7:0] x;
     wire [6:0] y;
@@ -51,6 +58,7 @@ module closet(
 
     closet_image unit_closet(pixel_index, clk_25mhz, oled_data_default);
     outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
+    seg_outfit_switch unit_seg_outfit(clock, outfit_number, seg_outfit);
     
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
@@ -59,6 +67,8 @@ module closet(
         returnHome = 0;
         outfit_number = 0;
         count = 0;
+        an = 4'b1111;
+        seg = 7'b111_1111;
     end
     
     assign return = returnHome;
@@ -89,7 +99,51 @@ module closet(
             end
             
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
-
+            
+            an <= an_outfit;
+            seg <= seg_outfit;
+            
+//            case (outfit_number)
+//                0: begin
+//                    seg <= 7'b1000000;
+//                end
+                
+//                1: begin
+//                    seg <= 7'b1111001;
+//                end
+                
+//                2: begin
+//                    seg <= 7'b0100100;
+//                end
+                
+//                3: begin
+//                    seg <= 7'b0110000;
+//                end
+                
+//                4: begin
+//                    seg <= 7'b0011001;
+//                end
+                
+//                5: begin
+//                    seg <= 7'b0010010;
+//                end
+                
+//                6: begin
+//                    seg <= 7'b0000010;
+//                end
+                
+//                7: begin
+//                    seg <= 7'b1111000;
+//                end
+                
+//                8: begin
+//                    seg <= 7'b0000000;
+//                end
+                
+//                9: begin
+//                    seg <= 7'b0011000;
+//                end
+//            endcase
 
             if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
                 oled_data <= oled_data_outfit;
@@ -102,6 +156,8 @@ module closet(
         else begin
             returnHome <= 0;
             count <= 0;
+            an <= 4'b1111;
+            seg <= 7'b111_1111;
         end
     end
     

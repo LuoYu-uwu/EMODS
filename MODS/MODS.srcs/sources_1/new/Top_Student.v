@@ -77,7 +77,7 @@ module Top_Student (
 //    bath unit_bath(enable_bath, clock, pixel_index, oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU,
-    pixel_index, closetToHome, oled_data_closet);
+    pixel_index, closetToHome, an, seg, oled_data_closet);
     
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
