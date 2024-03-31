@@ -102,48 +102,6 @@ module closet(
             
             an <= an_outfit;
             seg <= seg_outfit;
-            
-//            case (outfit_number)
-//                0: begin
-//                    seg <= 7'b1000000;
-//                end
-                
-//                1: begin
-//                    seg <= 7'b1111001;
-//                end
-                
-//                2: begin
-//                    seg <= 7'b0100100;
-//                end
-                
-//                3: begin
-//                    seg <= 7'b0110000;
-//                end
-                
-//                4: begin
-//                    seg <= 7'b0011001;
-//                end
-                
-//                5: begin
-//                    seg <= 7'b0010010;
-//                end
-                
-//                6: begin
-//                    seg <= 7'b0000010;
-//                end
-                
-//                7: begin
-//                    seg <= 7'b1111000;
-//                end
-                
-//                8: begin
-//                    seg <= 7'b0000000;
-//                end
-                
-//                9: begin
-//                    seg <= 7'b0011000;
-//                end
-//            endcase
 
             if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
                 oled_data <= oled_data_outfit;

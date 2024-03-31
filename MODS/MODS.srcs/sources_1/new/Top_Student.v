@@ -67,14 +67,15 @@ module Top_Student (
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
     
-//    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
-//        oled_data_eat, eatToHome, eating, increment);
+    eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
+        oled_data_eat, eatToHome, eating, increment);
    
-//    health_metre unit_health(eating, sleeping, bathing, increment, enable_home, clock, led, goSleep);
+    health_metre unit_health(eating, sleeping, bathing, increment, enable_home, clock, led, goSleep);
     
-//    sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
+    sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
-//    bath unit_bath(enable_bath, clock, pixel_index, oled_data_bath, bathToHome, bathing);
+    bath unit_bath(enable_bath, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
+        oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU,
     pixel_index, closetToHome, an, seg, oled_data_closet);

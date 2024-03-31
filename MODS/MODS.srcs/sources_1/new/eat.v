@@ -53,14 +53,11 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
     flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
     //selecting food
-    wire [15:0] oled_data_pasta, oled_data_fruit, oled_data_burger, oled_data_dessert, oled_data_drink;
+    wire [15:0] oled_data_pasta, oled_data_food;
     wire left, right, centre, down, up;
     
-    kitchen_burger unit_burger(pixel_index, clk_25mhz, oled_data_burger);
-    kitchen_dessert unit_dessert (pixel_index, clk_25mhz, oled_data_dessert);
-    kitchen_drink unit_drink (pixel_index, clk_25mhz, oled_data_drink);
-    kitchen_fruit unit_fruitkitchen (pixel_index, clk_25mhz, oled_data_fruit);
     kitchen_pasta unit_pasta (pixel_index, clk_25mhz, oled_data_pasta);
+    food_switch unit_food(clk_25mhz, pixel_index, foodSelect, oled_data_food);
     
     detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, btnU, 
         clk_25mhz, left, right, centre, down, up);
@@ -249,26 +246,30 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             begin
                 oled_data <= lightRed;
             end
-            else
+            else if (x >= 34 && x<=56 && y >= 1 && y <=45 )
             begin 
                 case(foodSelect)
                     //the rest of the screen is default image
                     3'b000: begin oled_data <= oled_data_pasta; //+5
                             increase <= 5; //set amount of increment based on food
                     end
-                    3'b001: begin oled_data <= oled_data_fruit; //+3
+                    3'b001: begin oled_data <= oled_data_food; //+3
                             increase <= 3;
                     end
-                    3'b010: begin oled_data <= oled_data_burger; //+5
+                    3'b010: begin oled_data <= oled_data_food; //+5
                             increase <= 5;
                     end
-                    3'b011: begin oled_data <= oled_data_dessert; //+4
+                    3'b011: begin oled_data <= oled_data_food; //+4
                             increase <= 4;
                     end
-                    3'b100: begin oled_data <= oled_data_drink; //+2
+                    3'b100: begin oled_data <= oled_data_food; //+2
                             increase <= 2;
                     end
                 endcase
+            end
+            else
+            begin
+                oled_data <= oled_data_pasta;
             end
             
         end
