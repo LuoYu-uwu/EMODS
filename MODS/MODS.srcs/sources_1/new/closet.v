@@ -34,8 +34,8 @@ module closet(
     wire clk_1000hz;
     wire clk_25mhz;
     
-    wire [15:0] oled_data_default, oled_data_outfit1, oled_data_outfit2, oled_data_outfit3, oled_data_outfit4;
-    wire [15:0] oled_data_outfit5, oled_data_outfit6, oled_data_outfit7, oled_data_outfit8, oled_data_outfit9;
+    wire [15:0] oled_data_default;
+    wire [15:0] oled_data_outfit;
     wire left, right, centre, down, up;
     
     wire [7:0] x;
@@ -50,16 +50,7 @@ module closet(
     flexible_clock_module unit_2 (clock, 1, clk_25mhz);
 
     closet_image unit_closet(pixel_index, clk_25mhz, oled_data_default);
-    
-    outfit_1 unit_outfit1(pixel_index, clk_25mhz, oled_data_outfit1);
-    outfit_2 unit_outfit2(pixel_index, clk_25mhz, oled_data_outfit2);
-    outfit_3 unit_outfit3(pixel_index, clk_25mhz, oled_data_outfit3);
-    outfit_4 unit_outfit4(pixel_index, clk_25mhz, oled_data_outfit4);
-    outfit_5 unit_outfit5(pixel_index, clk_25mhz, oled_data_outfit5);
-    outfit_6 unit_outfit6(pixel_index, clk_25mhz, oled_data_outfit6);
-    outfit_7 unit_outfit7(pixel_index, clk_25mhz, oled_data_outfit7);
-    outfit_8 unit_outfit8(pixel_index, clk_25mhz, oled_data_outfit8);
-    outfit_9 unit_outfit9(pixel_index, clk_25mhz, oled_data_outfit9);
+    outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
     
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
@@ -99,20 +90,9 @@ module closet(
             
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
 
-            
+
             if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
-                case (outfit_number) 
-                    0: oled_data <= oled_data_default;
-                    1: oled_data <= oled_data_outfit1;
-                    2: oled_data <= oled_data_outfit2;
-                    3: oled_data <= oled_data_outfit3;
-                    4: oled_data <= oled_data_outfit4;
-                    5: oled_data <= oled_data_outfit5;
-                    6: oled_data <= oled_data_outfit6;
-                    7: oled_data <= oled_data_outfit7;
-                    8: oled_data <= oled_data_outfit8;
-                    9: oled_data <= oled_data_outfit9;
-                endcase
+                oled_data <= oled_data_outfit;
             end else begin
                 oled_data <= oled_data_default;
             end
