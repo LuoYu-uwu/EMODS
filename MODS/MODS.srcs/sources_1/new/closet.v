@@ -25,8 +25,8 @@ module closet(
     input btnC, btnL, btnR, btnD, btnU,
     input [12:0] pixel_index,
     output return,
-    output reg [3:0] an,
-    output reg [6:0] seg,
+    output reg [3:0] an = 4'b1111,
+    output reg [6:0] seg = 7'b1111111,
     output reg [15:0] oled_data = 0);
     
     reg returnHome;

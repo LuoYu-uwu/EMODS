@@ -17,9 +17,9 @@ module Top_Student (
     inout PS2Clk, PS2Data,
     input [15:0]sw, 
     output [15:0] led,
-    output [6:0] seg,
-    output dp,
-    output [3:0] an,
+    output reg [6:0] seg = 7'b1111111,
+    output reg dp = 1,
+    output reg [3:0] an = 4'b1111,
     output [7:0] JC);
 
 //// Oled Display ////////////////////////////////////////////////////////////////
@@ -54,15 +54,18 @@ module Top_Student (
         activities = 3'b000;
     end
     
-    wire returnHome;
-    wire sleepToHome;
-    wire eatToHome;
-    wire closetToHome;
-    wire bathToHome;
+    wire returnHome, sleepToHome, eatToHome, closetToHome, bathToHome;
     wire goSleep;
     assign returnHome = (sleepToHome || eatToHome || closetToHome || bathToHome);
     wire eating, sleeping, bathing;
     wire [2:0] increment;
+    
+    wire [6:0] segHome;
+    wire dpHome;
+    wire [3:0] anHome;
+    wire [6:0] segCloset;
+    //wire dpCloset;
+    wire [3:0] anCloset;
     
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
@@ -70,7 +73,8 @@ module Top_Student (
     eat unit_eat(enable_eat, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
         oled_data_eat, eatToHome, eating, increment);
    
-    health_metre unit_health(eating, sleeping, bathing, increment, enable_home, clock, led, goSleep);
+    health_metre unit_health(eating, sleeping, bathing, increment, 
+        enable_home, clock, led, goSleep, segHome, dpHome, anHome);
     
     sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
@@ -78,7 +82,7 @@ module Top_Student (
         oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU,
-    pixel_index, closetToHome, an, seg, oled_data_closet);
+    pixel_index, closetToHome, anCloset, segCloset, oled_data_closet);
     
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
@@ -114,6 +118,8 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 1;
             enable_bath <= 0;
+            seg <= segCloset;
+            an <= anCloset;
             oled_data <= oled_data_closet;
         end
         else if (todo == 5)
@@ -132,6 +138,9 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 0;
             enable_bath <= 0;
+            seg <= segHome;
+            an <= anHome;
+            dp <= dpHome;
             oled_data <= oled_data_home;
         end
     end
