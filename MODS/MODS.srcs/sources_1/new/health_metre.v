@@ -90,7 +90,7 @@ module health_metre(input eating, input sleeping, input bathing,
         begin
             ctr <= 0;
         end
-        //if health = 0, wait for 1s, then go to sleep to boost health
+        //if health = 0, show SOS on seg for 1s, then go to sleep to boost health
         if(led == 0)
         begin
             seg <= seg1;
