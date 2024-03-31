@@ -250,11 +250,11 @@ module bath(input enable, input btnC, input btnL, input btnR, input btnD, input 
             begin
                 oled_data <= oled_data_bath;
             end
-            increase <= 1;
             if (dirt1==1&&dirt2==1&&dirt3==1)
             begin
                 //wait for 1.5s to go back home
                 counts <= (counts == 37500000) ? counts : counts + 1;
+                increase <= 1;
             end
             if (counts == 37500000)
             begin
