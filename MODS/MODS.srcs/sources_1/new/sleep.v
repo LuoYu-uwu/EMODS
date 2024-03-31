@@ -30,10 +30,8 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
     reg returnHome = 0;
     assign return = returnHome;
     reg [31:0] count = 0;
-    //reg wakeUp = 0;
     
     wire [15:0] oled_data_sleep, oled_data_wake;
-    //sleep_switch unit_sleep(wakeUp, pixel_index, clk_25mhz, oled_data_sleep);
     sleep_image unit_sleep(pixel_index, clk_25mhz, oled_data_sleep);
     waking_image unit_wake(pixel_index, clk_25mhz, oled_data_wake);
     
@@ -57,12 +55,19 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
     reg [6:0] y13 = 13;
     reg [6:0] y14 = 14;
     
+    //get zzz sleeping
+    reg [7:0] x57 = 57;
+    reg [7:0] x62 = 62;
+    reg [6:0] y29 = 29;
+    reg [6:0] y25 = 25;
+    parameter blue = 16'b00110_001101_10011;
+    
     always @(posedge clk_25mhz)
     begin
         if(enable)
         begin
             case(count)
-                32'd12500000, 32'd37500000, 32'd62500000, 32'd75000000, 32'd87500000, 32'd100000000: begin 
+                32'd12500000, 32'd37500000, 32'd75000000, 32'd87500000, 32'd100000000: begin 
                     y4 <= y4 + 1;
                     y5 <= y5 + 1;
                     y6 <= y6 + 1;
@@ -73,6 +78,11 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                     y12 <= y12 + 1;
                     y13 <= y13 + 1;
                     y14 <= y14 + 1;
+                    
+                    x57 <= x57 + 1;
+                    x62 <= x62 + 1;
+                    y29 <= y29 - 1;
+                    y25 <= y25 - 1;
                 end
                 32'd25000000, 32'd50000000: begin
                     y4 <= y4 - 1;
@@ -85,6 +95,28 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                     y12 <= y12 - 1;
                     y13 <= y13 - 1;
                     y14 <= y14 - 1;
+                    
+                    x57 <= x57 + 1;
+                    x62 <= x62 + 1;
+                    y29 <= y29 - 1;
+                    y25 <= y25 - 1;
+                end
+                32'd62500000: begin
+                    y4 <= y4 + 1;
+                    y5 <= y5 + 1;
+                    y6 <= y6 + 1;
+                    y7 <= y7 + 1;
+                    y8 <= y8 + 1;
+                    y10 <= y10 + 1;
+                    y11 <= y11 + 1;
+                    y12 <= y12 + 1;
+                    y13 <= y13 + 1;
+                    y14 <= y14 + 1;
+                    
+                    x57 <= 57;
+                    x62 <= 62;
+                    y29 <= 29;
+                    y25 <= 25;
                 end
                 //32'd100000011: begin
                 32'd105000000: begin
@@ -98,7 +130,11 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                     y12 <= 12;
                     y13 <= 13;
                     y14 <= 14;
-                    //wakeUp <= 1;
+                    
+                    x57 <= 57;
+                    x62 <= 62;
+                    y29 <= 29;
+                    y25 <= 25;
                 end
             endcase
             if(count <= 105000000)
@@ -109,6 +145,13 @@ module sleep(input enable, input clock, input [12:0] pixel_index,
                 || (x==x1+6 && y>= y12 && y<= y14) || (x==x1+7 && y>= y11 && y<= y13) || (x==x1+8 && y>= y11 && y<= y12))
                 begin
                     oled_data <= yellow;
+                end
+                else if ( (x>=x57 && x<=x57+2 && (y==y29 || y==y29+4) )|| x==x57 && y==y29+3 || 
+                    x==x57+1 && y==y29+2 || x==x57+2 && y==y29+1 || 
+                    (x>=x62 && x<=x62+2 && (y==y25 || y==y25+4) )|| x==x62 && y==y25+3 || 
+                    x==x62+1 && y==y25+2 || x==x62+2 && y==y25+1 )
+                begin
+                    oled_data <= blue;
                 end
                 else
                 begin
