@@ -279,6 +279,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             foodSelect <= 3'b000;
             increase <= 0;
             pause <= 0;
+            feed <= 0;
         end
     end
     
