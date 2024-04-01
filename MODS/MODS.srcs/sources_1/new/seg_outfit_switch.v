@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module seg_outfit_switch(input clock, input [4:0] outfit_number, output reg [6:0] seg);
+module seg_outfit_switch(input clock, input [3:0] outfit_number, output reg [6:0] seg);
 
     always @ (posedge clock) begin
         case (outfit_number)
