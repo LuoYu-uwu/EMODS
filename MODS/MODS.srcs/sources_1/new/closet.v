@@ -32,9 +32,14 @@ module closet(
     output [15:0] led,
     output reg [15:0] oled_data = 0);
     
+    parameter BLINK_CYCLE = 75_000_000;
+    parameter CLOSE_EYE = 5_000_000;
+    
     reg returnHome;
     reg [31:0] count;
     reg [31:0] sequence_counter = 0;
+    reg [31:0] blink_counter = 0;
+    reg blink_state = 0;
     
     reg [2:0] outfit_number;
     reg [2:0] hat_number;
@@ -46,6 +51,7 @@ module closet(
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire [15:0] oled_data_hat;
+    wire [15:0] oled_data_blink;
     wire [6:0] seg_outfit, seg_hat;
     
     wire clk_1000hz;
@@ -62,6 +68,7 @@ module closet(
     flexible_clock_module unit_2 (clock, 1, clk_25mhz);
 
     closet_image unit_closet(pixel_index, clk_25mhz, oled_data_default);
+    loopy_blink unit_blink(pixel_index, clk_25mhz, oled_data_blink);
     
     outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
     seg_outfit_switch unit_seg_outfit(clock, outfit_number, seg_outfit);
@@ -88,11 +95,21 @@ module closet(
     always @ (posedge clk_25mhz)
     begin
         if (enable == 1) begin
+        
+            if (blink_counter >= BLINK_CYCLE) begin
+                blink_counter <= 0; // Reset blink counter
+            end else begin
+                blink_counter <= blink_counter + 1;
+            end
+            
+            blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
 
             if (sw[3]) begin
                 if (sequence_counter >= 12500000) begin
                     hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
                     sequence_counter <= 0;
+                    an <= an_hat;
+                    seg <= seg_hat;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
@@ -100,6 +117,8 @@ module closet(
                 if (sequence_counter >= 12500000) begin
                     outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
                     sequence_counter <= 0;
+                    an <= an_outfit;
+                    seg <= seg_outfit;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
@@ -124,6 +143,17 @@ module closet(
                         outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
                     end
                 end
+                
+                if (sw[1]) begin
+                    an <= an_hat;
+                    seg <= seg_hat;
+                end else if (sw[0]) begin
+                    an <= an_outfit;
+                    seg <= seg_outfit;
+                end else begin
+                    an <= 4'b1111;
+                    seg <= 7'b111_1111;
+                end
             end
             
             // Debouncing for return home button
@@ -136,18 +166,13 @@ module closet(
             
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
             
-            if (sw[1] || sw[3]) begin
-                an <= an_hat;
-                seg <= seg_hat;
-            end else if (sw[0] || sw[2]) begin
-                an <= an_outfit;
-                seg <= seg_outfit;
-            end else begin
-                an <= 4'b1111;
-                seg <= 7'b111_1111;
-            end
-            
-            if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
+            if (x >= 33 && x <= 62 && y >= 18 && y <= 28) begin
+                if (blink_state == 1) begin
+                    oled_data <= oled_data_blink;
+                end else begin
+                    oled_data <= oled_data_default;
+                end
+            end else if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
                 oled_data <= oled_data_outfit;
             end else if (x >= 49 && x <= 71 && y >= 0 && y <= 17) begin
                 if (hat_number == 0) begin
@@ -166,6 +191,8 @@ module closet(
             count <= 0;
             an <= 4'b1111;
             seg <= 7'b111_1111;
+            blink_counter <= 0;
+            blink_state <= 0;
         end
     end
     
