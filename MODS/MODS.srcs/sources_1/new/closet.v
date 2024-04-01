@@ -43,16 +43,20 @@ module closet(
     
     reg [2:0] outfit_number;
     reg [2:0] hat_number;
+    reg [2:0] shoe_number;
     
     reg [1:0] an_index = 0;
     reg [3:0] an_outfit = 4'b1110;
     reg [3:0] an_hat = 4'b1101;
+    reg [3:0] an_shoe = 4'b1011;
     
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire [15:0] oled_data_hat;
+    wire [15:0] oled_data_shoe;
+    wire [15:0] oled_data_glove;
     wire [15:0] oled_data_blink;
-    wire [6:0] seg_outfit, seg_hat;
+    wire [6:0] seg_outfit, seg_hat, seg_shoe;
     
     wire clk_1000hz;
     wire clk_25mhz;
@@ -76,20 +80,24 @@ module closet(
     hat_switch unit_hat(clock, pixel_index, hat_number, oled_data_hat);
     seg_outfit_switch unit_seg_hat(clock, hat_number, seg_hat);
     
+    shoe_switch unit_shoe(clock, pixel_index, shoe_number, oled_data_shoe);
+    seg_outfit_switch unit_seg_shoe(clock, shoe_number, seg_shoe);
+    
+    purple_glove unit_glove(pixel_index, clk_25mhz, oled_data_glove);
+    
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
     
     initial begin
         returnHome = 0;
-        outfit_number = 0;
         count = 0;
+        outfit_number = 0;
+        hat_number = 0;
+        shoe_number = 0;
     end
     
     assign return = returnHome;
-    assign led[0] = sw[0];
-    assign led[1] = sw[1];
-    assign led[2] = sw[2];
-    assign led[3] = sw[3];
+    assign led = sw;
     assign dp = 1;
     
     always @ (posedge clk_25mhz)
@@ -104,7 +112,16 @@ module closet(
             
             blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
 
-            if (sw[3]) begin
+            if (sw[10]) begin
+                if (sequence_counter >= 12500000) begin
+                    shoe_number <= (shoe_number >= 7) ? 0 : shoe_number + 1;
+                    sequence_counter <= 0;
+                    an <= an_shoe;
+                    seg <= seg_shoe;
+                end else begin
+                    sequence_counter <= sequence_counter + 1;
+                end
+            end else if (sw[9]) begin
                 if (sequence_counter >= 12500000) begin
                     hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
                     sequence_counter <= 0;
@@ -113,7 +130,7 @@ module closet(
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
-            end else if (sw[2]) begin
+            end else if (sw[8]) begin
                 if (sequence_counter >= 12500000) begin
                     outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
                     sequence_counter <= 0;
@@ -127,7 +144,9 @@ module closet(
                 if (left == 1 && count == 0)
                 begin
                     count = count + 1;
-                    if (sw[1]) begin
+                    if (sw[2]) begin
+                        shoe_number <= (shoe_number == 0) ? 7 : shoe_number - 1;
+                    end else if (sw[1]) begin
                         hat_number <= (hat_number == 0) ? 7 : hat_number - 1;
                     end else if (sw[0]) begin
                         outfit_number <= (outfit_number == 0) ? 5 : outfit_number - 1;
@@ -137,14 +156,19 @@ module closet(
                 if (right == 1 && count == 0)
                 begin
                     count = count + 1;
-                    if (sw[1]) begin
+                    if (sw[2]) begin
+                        shoe_number <= (shoe_number == 7) ? 0 : shoe_number + 1;
+                    end else if (sw[1]) begin
                         hat_number <= (hat_number == 7) ? 0 : hat_number + 1;
                     end else if (sw[0]) begin
                         outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
                     end
                 end
                 
-                if (sw[1]) begin
+                if (sw[2]) begin
+                    an <= an_shoe;
+                    seg <= seg_shoe;
+                end else if (sw[1]) begin
                     an <= an_hat;
                     seg <= seg_hat;
                 end else if (sw[0]) begin
@@ -180,6 +204,16 @@ module closet(
                 end else begin
                     oled_data <= oled_data_hat;
                 end
+            end else if ((x >= 27 && x <= 36 && y >= 56 && y <= 62) 
+                || (x >= 57 && x <= 66 && y >= 56 && y <= 62)) begin
+                    if (shoe_number == 0) begin
+                        oled_data <= oled_data_default;
+                    end else begin
+                        oled_data <= oled_data_shoe;
+                    end
+            end else if ((x >= 18 && x <= 25 && y >= 25 && y <= 32) 
+                || (x >= 69 && x <= 76 && y >= 37 && y <= 43)) begin
+                    oled_data <= oled_data_glove;
             end else begin
                 oled_data <= oled_data_default;
             end
