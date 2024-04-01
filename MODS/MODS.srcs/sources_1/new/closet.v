@@ -28,21 +28,18 @@ module closet(
     output return,
     output reg [3:0] an = 4'b1111,
     output reg [6:0] seg = 7'b1111111,
+    output dp,
+    output [15:0] led,
     output reg [15:0] oled_data = 0);
-    
-    parameter red = 16'b11111_100111_10011;
-    parameter orange = 16'b11111_110110_10011;
-    parameter green = 16'b10011_111111_10011;
-    parameter cyan = 16'b10011_111010_11111;
-    parameter blue = 16'b10011_101100_11111;
-    parameter purple = 16'b10111_100111_11111;
     
     reg returnHome;
     reg [31:0] count;
+    reg [31:0] sequence_counter = 0;
     
     reg [2:0] outfit_number;
     reg [2:0] hat_number;
     
+    reg [1:0] an_index = 0;
     reg [3:0] an_outfit = 4'b1110;
     reg [3:0] an_hat = 4'b1101;
     
@@ -90,29 +87,50 @@ module closet(
     end
     
     assign return = returnHome;
+    assign led[0] = sw[0];
+    assign led[1] = sw[1];
+    assign led[2] = sw[2];
+    assign led[3] = sw[3];
+    assign dp = 1;
     
     always @ (posedge clk_25mhz)
     begin
         if (enable == 1) begin
 
-            //when left button is pushed
-            if (left == 1 && count == 0)
-            begin
-                count = count + 1;
-                if (sw[1]) begin
-                    hat_number <= (hat_number == 0) ? 7 : hat_number - 1;
-                end else if (sw[0]) begin
-                    outfit_number <= (outfit_number == 0) ? 5 : outfit_number - 1;
+            if (sw[3]) begin
+                if (sequence_counter >= 12500000) begin
+                    hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
+                    sequence_counter <= 0;
+                end else begin
+                    sequence_counter <= sequence_counter + 1;
                 end
-            end
-            //when right button is pushed
-            if (right == 1 && count == 0)
-            begin
-                count = count + 1;
-                if (sw[1]) begin
-                    hat_number <= (hat_number == 7) ? 0 : hat_number + 1;
-                end else if (sw[0]) begin
-                    outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
+            end else if (sw[2]) begin
+                if (sequence_counter >= 12500000) begin
+                    outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
+                    sequence_counter <= 0;
+                end else begin
+                    sequence_counter <= sequence_counter + 1;
+                end
+            end else begin
+                //when left button is pushed
+                if (left == 1 && count == 0)
+                begin
+                    count = count + 1;
+                    if (sw[1]) begin
+                        hat_number <= (hat_number == 0) ? 7 : hat_number - 1;
+                    end else if (sw[0]) begin
+                        outfit_number <= (outfit_number == 0) ? 5 : outfit_number - 1;
+                    end
+                end
+                //when right button is pushed
+                if (right == 1 && count == 0)
+                begin
+                    count = count + 1;
+                    if (sw[1]) begin
+                        hat_number <= (hat_number == 7) ? 0 : hat_number + 1;
+                    end else if (sw[0]) begin
+                        outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
+                    end
                 end
             end
             
@@ -126,17 +144,17 @@ module closet(
             
             count <= (count > 0 && count != 5000001) ? count + 1 : 0;
             
-            if (sw[1]) begin
+            if (sw[1] || sw[3]) begin
                 an <= an_hat;
                 seg <= seg_hat;
-            end else if (sw[0]) begin
+            end else if (sw[0] || sw[2]) begin
                 an <= an_outfit;
                 seg <= seg_outfit;
             end else begin
                 an <= 4'b1111;
                 seg <= 7'b111_1111;
             end
-
+            
             if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
                 oled_data <= oled_data_outfit;
             end else if (x >= 49 && x <= 71 && y >= 0 && y <= 17) begin

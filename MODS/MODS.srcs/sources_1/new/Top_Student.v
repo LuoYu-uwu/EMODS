@@ -16,7 +16,7 @@ module Top_Student (
     input btnL, btnC, btnR, btnD, btnU,
     inout PS2Clk, PS2Data,
     input [15:0]sw, 
-    output [15:0] led,
+    output reg [15:0] led,
     output reg [6:0] seg = 7'b1111111,
     output reg dp = 1,
     output reg [3:0] an = 4'b1111,
@@ -67,6 +67,9 @@ module Top_Student (
     //wire dpCloset;
     wire [3:0] anCloset;
     
+    wire [15:0] led_closet;
+    wire dp_closet;
+    
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
     
@@ -82,7 +85,7 @@ module Top_Student (
 //        oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU, sw,
-    pixel_index, closetToHome, anCloset, segCloset, oled_data_closet);
+    pixel_index, closetToHome, anCloset, segCloset, dp_closet, led_closet, oled_data_closet);
     
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
@@ -120,6 +123,7 @@ module Top_Student (
             enable_bath <= 0;
             seg <= segCloset;
             an <= anCloset;
+            led <= led_closet;
             oled_data <= oled_data_closet;
         end
         else if (todo == 5)
