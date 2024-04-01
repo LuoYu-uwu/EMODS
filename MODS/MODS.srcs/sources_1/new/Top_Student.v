@@ -63,10 +63,9 @@ module Top_Student (
     wire [6:0] segHome;
     wire dpHome;
     wire [3:0] anHome;
-    wire [6:0] segCloset;
-    //wire dpCloset;
-    wire [3:0] anCloset;
     
+    wire [6:0] segCloset;
+    wire [3:0] anCloset;
     wire [15:0] led_closet;
     wire dp_closet;
     
@@ -123,6 +122,7 @@ module Top_Student (
             enable_bath <= 0;
             seg <= segCloset;
             an <= anCloset;
+            dp <= dp_closet;
             led <= led_closet;
             oled_data <= oled_data_closet;
         end

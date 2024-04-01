@@ -46,8 +46,6 @@ module closet(
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire [15:0] oled_data_hat;
-    wire [15:0] oled_data_red, oled_data_orange, oled_data_yellow;
-    wire [15:0] oled_data_green, oled_data_blue, oled_data_purple;
     wire [6:0] seg_outfit, seg_hat;
     
     wire clk_1000hz;
@@ -68,13 +66,7 @@ module closet(
     outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
     seg_outfit_switch unit_seg_outfit(clock, outfit_number, seg_outfit);
     
-    white_hat unit_hat(pixel_index, clk_25mhz, oled_data_hat);
-    red_hat unit_red(pixel_index, clk_25mhz, oled_data_red);
-    orange_hat unit_orange(pixel_index, clk_25mhz, oled_data_orange);
-    yellow_hat unit_yellow(pixel_index, clk_25mhz, oled_data_yellow);
-    green_hat unit_green(pixel_index, clk_25mhz, oled_data_green);
-    blue_hat unit_blue(pixel_index, clk_25mhz, oled_data_blue);
-    purple_hat unit_purple(pixel_index, clk_25mhz, oled_data_purple);
+    hat_switch unit_hat(clock, pixel_index, hat_number, oled_data_hat);
     seg_outfit_switch unit_seg_hat(clock, hat_number, seg_hat);
     
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
@@ -158,39 +150,11 @@ module closet(
             if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
                 oled_data <= oled_data_outfit;
             end else if (x >= 49 && x <= 71 && y >= 0 && y <= 17) begin
-                case (hat_number) 
-                    0: begin
-                        oled_data <= oled_data_default;
-                    end
-                    
-                    1: begin
-                        oled_data <= oled_data_hat;
-                    end 
-                    
-                    2: begin
-                        oled_data <= oled_data_red;
-                    end
-                    
-                    3: begin
-                        oled_data <= oled_data_orange;
-                    end
-                    
-                    4: begin
-                        oled_data <= oled_data_yellow;
-                    end
-                    
-                    5: begin
-                        oled_data <= oled_data_green;
-                    end
-                    
-                    6: begin
-                        oled_data <= oled_data_blue;
-                    end
-                    
-                    7: begin
-                        oled_data <= oled_data_purple;
-                    end
-                endcase
+                if (hat_number == 0) begin
+                    oled_data <= oled_data_default;
+                end else begin
+                    oled_data <= oled_data_hat;
+                end
             end else begin
                 oled_data <= oled_data_default;
             end
