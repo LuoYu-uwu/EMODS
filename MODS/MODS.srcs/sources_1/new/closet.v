@@ -122,31 +122,39 @@ module closet(
             
             blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
             
+            if (sw[15]) begin
+                frequency_counter = 7_500_000;
+            end else if (sw[14]) begin
+                frequency_counter = 20_000_000;
+            end else begin
+                frequency_counter = 12_500_000;
+            end
+            
             if (sw[11]) begin
-                if (sequence_counter >= 12500000) begin
+                if (sequence_counter >= frequency_counter) begin
                     glove_number <= (glove_number >= 7) ? 0 : glove_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[10]) begin
-                if (sequence_counter >= 12500000) begin
+                if (sequence_counter >= frequency_counter) begin
                     shoe_number <= (shoe_number >= 7) ? 0 : shoe_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[9]) begin
-                if (sequence_counter >= 12500000) begin
+                if (sequence_counter >= frequency_counter) begin
                     hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[8]) begin
-                if (sequence_counter >= 12500000) begin
+                if (sequence_counter >= frequency_counter) begin
                     outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
-                    sequence_counter <= 0;;
+                    sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
