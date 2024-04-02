@@ -53,13 +53,15 @@ module closet(
     reg [3:0] an_shoe = 4'b1011;
     reg [3:0] an_glove = 4'b0111;
     
+    wire [3:0] an_closet;
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire [15:0] oled_data_hat;
     wire [15:0] oled_data_shoe;
     wire [15:0] oled_data_glove;
     wire [15:0] oled_data_blink;
-    wire [6:0] seg_outfit, seg_hat, seg_shoe, seg_glove;
+    wire [6:0] seg_closet, seg_outfit, seg_hat, seg_shoe, seg_glove;
+    wire dp_closet;
     
     wire clk_1000hz;
     wire clk_25mhz;
@@ -92,6 +94,9 @@ module closet(
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
     
+    seg_control_closet(clock, an_outfit, an_hat, an_shoe, an_glove, 
+        seg_outfit, seg_hat, seg_shoe, seg_glove, an_closet, seg_closet, dp_closet);
+    
     initial begin
         returnHome = 0;
         count = 0;
@@ -121,8 +126,6 @@ module closet(
                 if (sequence_counter >= 12500000) begin
                     glove_number <= (glove_number >= 7) ? 0 : glove_number + 1;
                     sequence_counter <= 0;
-                    an <= an_glove;
-                    seg <= seg_glove;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
@@ -130,8 +133,6 @@ module closet(
                 if (sequence_counter >= 12500000) begin
                     shoe_number <= (shoe_number >= 7) ? 0 : shoe_number + 1;
                     sequence_counter <= 0;
-                    an <= an_shoe;
-                    seg <= seg_shoe;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
@@ -139,17 +140,13 @@ module closet(
                 if (sequence_counter >= 12500000) begin
                     hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
                     sequence_counter <= 0;
-                    an <= an_hat;
-                    seg <= seg_hat;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[8]) begin
                 if (sequence_counter >= 12500000) begin
                     outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
-                    sequence_counter <= 0;
-                    an <= an_outfit;
-                    seg <= seg_outfit;
+                    sequence_counter <= 0;;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
@@ -182,24 +179,10 @@ module closet(
                         outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
                     end
                 end
-                
-                if (sw[3]) begin
-                    an <= an_glove;
-                    seg <= seg_glove;
-                end else if (sw[2]) begin
-                    an <= an_shoe;
-                    seg <= seg_shoe;
-                end else if (sw[1]) begin
-                    an <= an_hat;
-                    seg <= seg_hat;
-                end else if (sw[0]) begin
-                    an <= an_outfit;
-                    seg <= seg_outfit;
-                end else begin
-                    an <= 4'b1111;
-                    seg <= 7'b111_1111;
-                end
             end
+            
+            an <= an_closet;
+            seg <= seg_closet;
             
             // Debouncing for return home button
             if (down == 1 && count == 0)
