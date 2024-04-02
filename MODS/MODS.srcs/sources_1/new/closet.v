@@ -113,21 +113,23 @@ module closet(
     always @ (posedge clk_25mhz)
     begin
         if (enable == 1) begin
-        
+            
             if (blink_counter >= BLINK_CYCLE) begin
                 blink_counter <= 0; // Reset blink counter
             end else begin
                 blink_counter <= blink_counter + 1;
             end
             
+            // 3s total: 0.2s close eye + 2.8s open eye
             blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
             
+            // Adjust frequency of auto toggle
             if (sw[15]) begin
-                frequency_counter = 7_500_000;
+                frequency_counter = 7_500_000; // 0.3s
             end else if (sw[14]) begin
-                frequency_counter = 20_000_000;
+                frequency_counter = 20_000_000; // 0.8s
             end else begin
-                frequency_counter = 12_500_000;
+                frequency_counter = 12_500_000; // 0.5s
             end
             
             if (sw[11]) begin
@@ -187,6 +189,15 @@ module closet(
                         outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
                     end
                 end
+            end
+            
+            if (up == 1 && count == 0)
+            begin
+                count = count + 1;
+                outfit_number <= 0;
+                hat_number <= 0;
+                shoe_number <= 0;
+                glove_number <= 0;
             end
             
             an <= an_closet;
