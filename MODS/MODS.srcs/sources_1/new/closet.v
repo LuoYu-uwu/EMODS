@@ -40,15 +40,18 @@ module closet(
     reg [31:0] sequence_counter = 0;
     reg [31:0] blink_counter = 0;
     reg blink_state = 0;
+    reg [31:0] frequency_counter;
     
     reg [2:0] outfit_number;
     reg [2:0] hat_number;
     reg [2:0] shoe_number;
+    reg [2:0] glove_number;
     
     reg [1:0] an_index = 0;
     reg [3:0] an_outfit = 4'b1110;
     reg [3:0] an_hat = 4'b1101;
     reg [3:0] an_shoe = 4'b1011;
+    reg [3:0] an_glove = 4'b0111;
     
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
@@ -56,7 +59,7 @@ module closet(
     wire [15:0] oled_data_shoe;
     wire [15:0] oled_data_glove;
     wire [15:0] oled_data_blink;
-    wire [6:0] seg_outfit, seg_hat, seg_shoe;
+    wire [6:0] seg_outfit, seg_hat, seg_shoe, seg_glove;
     
     wire clk_1000hz;
     wire clk_25mhz;
@@ -83,7 +86,8 @@ module closet(
     shoe_switch unit_shoe(clock, pixel_index, shoe_number, oled_data_shoe);
     seg_outfit_switch unit_seg_shoe(clock, shoe_number, seg_shoe);
     
-    purple_glove unit_glove(pixel_index, clk_25mhz, oled_data_glove);
+    glove_switch unit_glove(clock, pixel_index, glove_number, oled_data_glove);
+    seg_outfit_switch unit_seg_glove(clock, glove_number, seg_glove);
     
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
@@ -94,6 +98,7 @@ module closet(
         outfit_number = 0;
         hat_number = 0;
         shoe_number = 0;
+        glove_number = 0;
     end
     
     assign return = returnHome;
@@ -111,8 +116,17 @@ module closet(
             end
             
             blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
-
-            if (sw[10]) begin
+            
+            if (sw[11]) begin
+                if (sequence_counter >= 12500000) begin
+                    glove_number <= (glove_number >= 7) ? 0 : glove_number + 1;
+                    sequence_counter <= 0;
+                    an <= an_glove;
+                    seg <= seg_glove;
+                end else begin
+                    sequence_counter <= sequence_counter + 1;
+                end
+            end else if (sw[10]) begin
                 if (sequence_counter >= 12500000) begin
                     shoe_number <= (shoe_number >= 7) ? 0 : shoe_number + 1;
                     sequence_counter <= 0;
@@ -144,7 +158,9 @@ module closet(
                 if (left == 1 && count == 0)
                 begin
                     count = count + 1;
-                    if (sw[2]) begin
+                    if (sw[3]) begin
+                        glove_number <= (glove_number == 0) ? 7 : glove_number - 1;
+                    end else if (sw[2]) begin
                         shoe_number <= (shoe_number == 0) ? 7 : shoe_number - 1;
                     end else if (sw[1]) begin
                         hat_number <= (hat_number == 0) ? 7 : hat_number - 1;
@@ -156,7 +172,9 @@ module closet(
                 if (right == 1 && count == 0)
                 begin
                     count = count + 1;
-                    if (sw[2]) begin
+                    if (sw[3]) begin
+                        glove_number <= (glove_number == 7) ? 0 : glove_number + 1;
+                    end else if (sw[2]) begin
                         shoe_number <= (shoe_number == 7) ? 0 : shoe_number + 1;
                     end else if (sw[1]) begin
                         hat_number <= (hat_number == 7) ? 0 : hat_number + 1;
@@ -165,7 +183,10 @@ module closet(
                     end
                 end
                 
-                if (sw[2]) begin
+                if (sw[3]) begin
+                    an <= an_glove;
+                    seg <= seg_glove;
+                end else if (sw[2]) begin
                     an <= an_shoe;
                     seg <= seg_shoe;
                 end else if (sw[1]) begin
@@ -213,7 +234,11 @@ module closet(
                     end
             end else if ((x >= 18 && x <= 25 && y >= 25 && y <= 32) 
                 || (x >= 69 && x <= 76 && y >= 37 && y <= 43)) begin
-                    oled_data <= oled_data_glove;
+                    if (glove_number == 0) begin
+                        oled_data <= oled_data_default;
+                    end else begin
+                        oled_data <= oled_data_glove;
+                    end
             end else begin
                 oled_data <= oled_data_default;
             end
