@@ -103,6 +103,7 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 0;
             enable_bath <= 0;
+            led <= led_health;
             oled_data <= oled_data_eat;
         end
         else if (todo == 2)

@@ -128,6 +128,23 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
                 //enable the increment
                 eating <= 1;
                 feed = feed + 1;
+                case(foodSelect)
+                    3'b000: begin 
+                            increase <= 5; //set amount of increment based on food
+                    end
+                    3'b001: begin
+                            increase <= 3;
+                    end
+                    3'b010: begin
+                            increase <= 5;
+                    end
+                    3'b011: begin
+                            increase <= 4;
+                    end
+                    3'b100: begin
+                            increase <= 2;
+                    end
+                endcase
             end
             else
             begin
@@ -248,24 +265,14 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             end
             else if (x >= 34 && x<=56 && y >= 1 && y <=45 )
             begin 
-                case(foodSelect)
-                    //the rest of the screen is default image
-                    3'b000: begin oled_data <= oled_data_pasta; //+5
-                            increase <= 5; //set amount of increment based on food
-                    end
-                    3'b001: begin oled_data <= oled_data_food; //+3
-                            increase <= 3;
-                    end
-                    3'b010: begin oled_data <= oled_data_food; //+5
-                            increase <= 5;
-                    end
-                    3'b011: begin oled_data <= oled_data_food; //+4
-                            increase <= 4;
-                    end
-                    3'b100: begin oled_data <= oled_data_food; //+2
-                            increase <= 2;
-                    end
-                endcase
+                if (foodSelect == 3'b000)
+                begin
+                    oled_data <= oled_data_pasta;
+                end
+                else
+                begin
+                    oled_data <= oled_data_food;
+                end
             end
             else
             begin
@@ -277,7 +284,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
         begin
             returnHome <= 0;
             foodSelect <= 3'b000;
-            increase <= 0;
+            //increase <= 0;
             pause <= 0;
             feed <= 0;
         end
