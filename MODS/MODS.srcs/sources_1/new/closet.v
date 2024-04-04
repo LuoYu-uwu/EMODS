@@ -76,7 +76,7 @@ module closet(
     flexible_clock_module unit_1 (clock, 49999, clk_1000hz);
     flexible_clock_module unit_2 (clock, 1, clk_25mhz);
 
-    closet_image unit_closet(pixel_index, clk_25mhz, oled_data_default);
+    closet_enhance unit_closet(pixel_index, clk_25mhz, oled_data_default);
     loopy_blink unit_blink(pixel_index, clk_25mhz, oled_data_blink);
     
     outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
@@ -134,28 +134,28 @@ module closet(
             
             if (sw[11]) begin
                 if (sequence_counter >= frequency_counter) begin
-                    glove_number <= (glove_number >= 7) ? 0 : glove_number + 1;
+                    glove_number <= (glove_number >= 4) ? 0 : glove_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[10]) begin
                 if (sequence_counter >= frequency_counter) begin
-                    shoe_number <= (shoe_number >= 7) ? 0 : shoe_number + 1;
+                    shoe_number <= (shoe_number >= 4) ? 0 : shoe_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[9]) begin
                 if (sequence_counter >= frequency_counter) begin
-                    hat_number <= (hat_number >= 7) ? 0 : hat_number + 1;
+                    hat_number <= (hat_number >= 4) ? 0 : hat_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
                 end
             end else if (sw[8]) begin
                 if (sequence_counter >= frequency_counter) begin
-                    outfit_number <= (outfit_number >= 5) ? 0 : outfit_number + 1;
+                    outfit_number <= (outfit_number >= 3) ? 0 : outfit_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
@@ -166,13 +166,13 @@ module closet(
                 begin
                     count = count + 1;
                     if (sw[3]) begin
-                        glove_number <= (glove_number == 0) ? 7 : glove_number - 1;
+                        glove_number <= (glove_number == 0) ? 4 : glove_number - 1;
                     end else if (sw[2]) begin
-                        shoe_number <= (shoe_number == 0) ? 7 : shoe_number - 1;
+                        shoe_number <= (shoe_number == 0) ? 4 : shoe_number - 1;
                     end else if (sw[1]) begin
-                        hat_number <= (hat_number == 0) ? 7 : hat_number - 1;
+                        hat_number <= (hat_number == 0) ? 4 : hat_number - 1;
                     end else if (sw[0]) begin
-                        outfit_number <= (outfit_number == 0) ? 5 : outfit_number - 1;
+                        outfit_number <= (outfit_number == 0) ? 3 : outfit_number - 1;
                     end
                 end
                 //when right button is pushed
@@ -180,13 +180,13 @@ module closet(
                 begin
                     count = count + 1;
                     if (sw[3]) begin
-                        glove_number <= (glove_number == 7) ? 0 : glove_number + 1;
+                        glove_number <= (glove_number == 4) ? 0 : glove_number + 1;
                     end else if (sw[2]) begin
-                        shoe_number <= (shoe_number == 7) ? 0 : shoe_number + 1;
+                        shoe_number <= (shoe_number == 4) ? 0 : shoe_number + 1;
                     end else if (sw[1]) begin
-                        hat_number <= (hat_number == 7) ? 0 : hat_number + 1;
+                        hat_number <= (hat_number == 4) ? 0 : hat_number + 1;
                     end else if (sw[0]) begin
-                        outfit_number <= (outfit_number == 5) ? 0 : outfit_number + 1;
+                        outfit_number <= (outfit_number == 3) ? 0 : outfit_number + 1;
                     end
                 end
             end

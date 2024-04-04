@@ -32,43 +32,43 @@ module hat_switch(
     wire clk_25mhz;
     flexible_clock_module unit_slow_clock (clock, 1, clk_25mhz);
     
-    white_hat unit_hat(pixel_index, clk_25mhz, oled_data_white);
-    red_hat unit_red(pixel_index, clk_25mhz, oled_data_red);
+    //white_hat unit_hat(pixel_index, clk_25mhz, oled_data_white);
+    //red_hat unit_red(pixel_index, clk_25mhz, oled_data_red);
     orange_hat unit_orange(pixel_index, clk_25mhz, oled_data_orange);
     yellow_hat unit_yellow(pixel_index, clk_25mhz, oled_data_yellow);
     green_hat unit_green(pixel_index, clk_25mhz, oled_data_green);
     blue_hat unit_blue(pixel_index, clk_25mhz, oled_data_blue);
-    purple_hat unit_purple(pixel_index, clk_25mhz, oled_data_purple);
+    //purple_hat unit_purple(pixel_index, clk_25mhz, oled_data_purple);
     
     always @ (posedge clock) begin
         case (hat_number)   
             1: begin
-                oled_data <= oled_data_white;
+                oled_data <= oled_data_orange;
             end 
             
             2: begin
-                oled_data <= oled_data_red;
-            end
-            
-            3: begin
-                oled_data <= oled_data_orange;
-            end
-            
-            4: begin
                 oled_data <= oled_data_yellow;
             end
             
-            5: begin
+            3: begin
                 oled_data <= oled_data_green;
             end
             
-            6: begin
+            4: begin
                 oled_data <= oled_data_blue;
             end
             
-            7: begin
-                oled_data <= oled_data_purple;
-            end
+//            5: begin
+//                oled_data <= oled_data_blue;
+//            end
+            
+//            6: begin
+//                oled_data <= oled_data_blue;
+//            end
+            
+//            7: begin
+//                oled_data <= oled_data_purple;
+//            end
         endcase
     end
     
