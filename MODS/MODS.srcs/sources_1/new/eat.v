@@ -100,7 +100,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
         //check if shld be eating
         if (enable == 1)
         begin
-            //manually wait and dont detect centre buttons first, for 1s. 10000001
+            //manually wait and dont detect centre buttons first, for 0.2s
             pause <= (pause == 5000001) ? pause : pause + 1;
             
             //when left button is pushed
