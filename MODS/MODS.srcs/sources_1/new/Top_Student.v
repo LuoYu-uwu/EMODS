@@ -42,6 +42,7 @@ module Top_Student (
     reg enable_closet;
     reg enable_bath;
     reg [2:0] activities;
+    reg [2:0] prev_todo = 3'b000;
     
     initial begin
         enable_home = 1;
@@ -149,7 +150,6 @@ module Top_Student (
             oled_data <= oled_data_home;
         end
     end
-
     
     Oled_Display unit_oled(.clk(clk_6p25m), .reset(0), .frame_begin(fb), 
     .sending_pixels(send), .sample_pixel(sample), .pixel_index(pixel_index), 

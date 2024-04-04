@@ -33,12 +33,12 @@ module shoe_switch(
     flexible_clock_module unit_slow_clock (clock, 1, clk_25mhz);
     
     white_shoe unit_white(pixel_index, clk_25mhz, oled_data_white);
-    red_shoe unit_red(pixel_index, clk_25mhz, oled_data_red);
+    //red_shoe unit_red(pixel_index, clk_25mhz, oled_data_red);
     orange_shoe unit_orange(pixel_index, clk_25mhz, oled_data_orange);
     yellow_shoe unit_yellow(pixel_index, clk_25mhz, oled_data_yellow);
-    green_shoe unit_green(pixel_index, clk_25mhz, oled_data_green);
+    //green_shoe unit_green(pixel_index, clk_25mhz, oled_data_green);
     blue_shoe unit_blue(pixel_index, clk_25mhz, oled_data_blue);
-    purple_shoe unit_purple(pixel_index, clk_25mhz, oled_data_purple);
+    //purple_shoe unit_purple(pixel_index, clk_25mhz, oled_data_purple);
     
     always @ (posedge clock) begin
         case (shoe_number)   
@@ -47,28 +47,32 @@ module shoe_switch(
             end 
             
             2: begin
-                oled_data <= oled_data_red;
-            end
-            
-            3: begin
+                //oled_data <= oled_data_red;
                 oled_data <= oled_data_orange;
             end
             
-            4: begin
+            3: begin
+                //oled_data <= oled_data_orange;
                 oled_data <= oled_data_yellow;
             end
             
-            5: begin
-                oled_data <= oled_data_green;
-            end
-            
-            6: begin
+            4: begin
+                //oled_data <= oled_data_yellow;
                 oled_data <= oled_data_blue;
             end
             
-            7: begin
-                oled_data <= oled_data_purple;
-            end
+//            5: begin
+//                //oled_data <= oled_data_green;
+//                oled_data <= oled_data_blue;
+//            end
+            
+//            6: begin
+//                oled_data <= oled_data_blue;
+//            end
+            
+//            7: begin
+//                oled_data <= oled_data_purple;
+//            end
         endcase
     end
     
