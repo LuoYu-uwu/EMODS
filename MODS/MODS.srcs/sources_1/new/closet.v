@@ -220,7 +220,11 @@ module closet(
                     oled_data <= oled_data_default;
                 end
             end else if (x >= 25 && x <= 71 && y >= 26 && y <= 56) begin
-                oled_data <= oled_data_outfit;
+                if (outfit_number == 0) begin
+                    oled_data <= oled_data_default;
+                end else begin
+                    oled_data <= oled_data_outfit;
+                end 
             end else if (x >= 49 && x <= 71 && y >= 0 && y <= 17) begin
                 if (hat_number == 0) begin
                     oled_data <= oled_data_default;
