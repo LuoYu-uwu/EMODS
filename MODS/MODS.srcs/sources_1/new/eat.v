@@ -53,10 +53,10 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
     flexible_clock_module unit_b (clock, 1, clk_25mhz);
     
     //selecting food
-    wire [15:0] oled_data_pasta, oled_data_food;
+    wire [15:0] oled_data_burger, oled_data_food;
     wire left, right, centre, down, up;
     
-    kitchen_pasta unit_pasta (pixel_index, clk_25mhz, oled_data_pasta);
+    burger unit_burger(pixel_index, clk_25mhz, oled_data_burger);
     food_switch unit_food(clk_25mhz, pixel_index, foodSelect, oled_data_food);
     
     detect_button unit_button2 (enable, btnC, btnL, btnR, btnD, btnU, 
@@ -100,8 +100,8 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
         //check if shld be eating
         if (enable == 1)
         begin
-            //manually wait and dont detect centre buttons first, for 1s
-            pause <= (pause == 10000001) ? 0 : pause + 1;
+            //manually wait and dont detect centre buttons first, for 1s. 10000001
+            pause <= (pause == 5000001) ? pause : pause + 1;
             
             //when left button is pushed
             if (left == 1 && count == 0)
@@ -121,7 +121,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
                 count = count + 1;
                 returnHome <= 1;
             end
-            if (centre == 1 && count == 0 && pause == 10000001)
+            if (centre == 1 && count == 0 && pause == 5000001)
             begin
                 //signal the start of increment of health based on the food
                 count = count + 1;
@@ -263,11 +263,11 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             begin
                 oled_data <= lightRed;
             end
-            else if (x >= 34 && x<=56 && y >= 1 && y <=45 )
+            else if (x >= 35 && x<=55 && y >= 2 && y <=22 )
             begin 
                 if (foodSelect == 3'b000)
                 begin
-                    oled_data <= oled_data_pasta;
+                    oled_data <= oled_data_burger;
                 end
                 else
                 begin
@@ -276,7 +276,7 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
             end
             else
             begin
-                oled_data <= oled_data_pasta;
+                oled_data <= oled_data_burger;
             end
             
         end
@@ -284,7 +284,6 @@ module eat(input enable, input btnC, input btnL, input btnR, input btnD, input b
         begin
             returnHome <= 0;
             foodSelect <= 3'b000;
-            //increase <= 0;
             pause <= 0;
             feed <= 0;
         end

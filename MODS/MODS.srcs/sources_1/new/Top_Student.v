@@ -33,9 +33,7 @@ module Top_Student (
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
-    //wire clk_1000hz;
     flexible_clock_module clk_divider_6p25m(clock, 7, clk_6p25m);
-    //flexible_clock_module unit_c (clock, 49999, clk_1000hz);
         
     wire [2:0] todo;
     reg enable_home; 
