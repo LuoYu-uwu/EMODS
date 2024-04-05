@@ -3,7 +3,9 @@
 <!--                                                         -->
 <!-- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.   -->
 
+
 <Project Version="7" Minor="38" Path="C:/Users/luozi/OneDrive/Desktop/EE2026/team MODS 6/MODS/MODS.xpr">
+
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="f94a5ac9f263460da3f685dc06011664"/>
@@ -346,6 +348,7 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/selection.v">
+      <File Path="$PSRCDIR/sources_1/new/seg_satisfied.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
