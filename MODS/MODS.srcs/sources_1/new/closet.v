@@ -35,12 +35,24 @@ module closet(
     parameter BLINK_CYCLE = 75_000_000;
     parameter CLOSE_EYE = 5_000_000;
     
+    // State definitions
+    localparam STATE_NORMAL = 2'b00,
+               STATE_BUTTON_HOLD = 2'b01,
+               STATE_DISPLAY_SLAY = 2'b10,
+               STATE_REVERT_DISPLAY = 2'b11;
+    
+    reg [1:0] current_state = STATE_NORMAL;
+    reg [1:0] next_state = STATE_NORMAL;
+
     reg returnHome;
     reg [31:0] count;
     reg [31:0] sequence_counter = 0;
     reg [31:0] blink_counter = 0;
     reg blink_state = 0;
     reg [31:0] frequency_counter;
+    // new
+    reg [31:0] satisfaction_counter;
+    reg satisfactory_state;
     
     reg [2:0] outfit_number;
     reg [2:0] hat_number;
@@ -54,14 +66,15 @@ module closet(
     reg [3:0] an_glove = 4'b0111;
     
     wire [3:0] an_closet;
+    wire [3:0] an_satisfied;
     wire [15:0] oled_data_default;
     wire [15:0] oled_data_outfit;
     wire [15:0] oled_data_hat;
     wire [15:0] oled_data_shoe;
     wire [15:0] oled_data_glove;
     wire [15:0] oled_data_blink;
-    wire [6:0] seg_closet, seg_outfit, seg_hat, seg_shoe, seg_glove;
-    wire dp_closet;
+    wire [6:0] seg_closet, seg_outfit, seg_hat, seg_shoe, seg_glove, seg_satisfied;
+    wire dp_closet, dp_satisfied;
     
     wire clk_1000hz;
     wire clk_25mhz;
@@ -78,6 +91,7 @@ module closet(
 
     closet_enhance unit_closet(pixel_index, clk_25mhz, oled_data_default);
     loopy_blink unit_blink(pixel_index, clk_25mhz, oled_data_blink);
+    seg_satisfied unit_satisfied(clock, an_satisfied, seg_satisfied, dp_satisfied);
     
     outfits_switch unit_outfit(clock, pixel_index, outfit_number, oled_data_outfit);
     seg_outfit_switch unit_seg_outfit(clock, outfit_number, seg_outfit);
@@ -94,8 +108,8 @@ module closet(
     detect_button unit_button3 (enable, btnC, btnL, btnR, btnD, btnU, 
     clk_25mhz, left, right, centre, down, up);
     
-    seg_control_closet(clock, an_outfit, an_hat, an_shoe, an_glove, 
-        seg_outfit, seg_hat, seg_shoe, seg_glove, an_closet, seg_closet, dp_closet);
+    seg_control_closet(clock, an_outfit, an_hat, an_shoe, an_glove, seg_outfit, 
+        seg_hat, seg_shoe, seg_glove, an_closet, seg_closet, dp_closet);
     
     initial begin
         returnHome = 0;
@@ -109,6 +123,43 @@ module closet(
     assign return = returnHome;
     assign led = sw;
     assign dp = 1;
+    
+    always @(posedge clk_25mhz) begin
+        case (current_state)
+            STATE_NORMAL: begin
+                if (centre && !satisfactory_state) begin
+                    // Transition to button hold state if center button is pressed
+                    next_state <= STATE_BUTTON_HOLD;
+                    satisfaction_counter <= 0;  // Reset the counter
+                end
+            end
+            STATE_BUTTON_HOLD: begin
+                if (!centre) begin
+                    // Button released before 2 seconds
+                    next_state <= STATE_NORMAL;
+                end else if (satisfaction_counter >= 50_000_000) begin  // 2 seconds at 25 MHz
+                    // Transition to display SLAY state
+                    next_state <= STATE_DISPLAY_SLAY;
+                    satisfaction_counter <= 0;  // Reset the counter for displaying SLAY
+                end else begin
+                    satisfaction_counter <= satisfaction_counter + 1;
+                end
+            end
+            STATE_DISPLAY_SLAY: begin
+                if (satisfaction_counter >= 25_000_000) begin  // 1 second at 25 MHz
+                    // Transition to revert display state
+                    next_state <= STATE_REVERT_DISPLAY;
+                end else begin
+                    satisfaction_counter <= satisfaction_counter + 1;
+                end
+            end
+            STATE_REVERT_DISPLAY: begin
+                // Return to normal state after a brief moment
+                next_state <= STATE_NORMAL;
+            end
+        endcase
+    end
+
     
     always @ (posedge clk_25mhz)
     begin
@@ -199,9 +250,31 @@ module closet(
                 shoe_number <= 0;
                 glove_number <= 0;
             end
-            
-            an <= an_closet;
-            seg <= seg_closet;
+
+            current_state <= next_state;
+                
+            case (current_state)
+                STATE_NORMAL: begin
+                    // Normal display logic
+                    an <= an_closet;
+                    seg <= seg_closet;
+                end
+                STATE_DISPLAY_SLAY: begin
+                    // Display "SLAY"
+                    an <= an_satisfied;
+                    seg <= seg_satisfied;
+                end
+                STATE_REVERT_DISPLAY: begin
+                    // Revert to initial display (can be merged with STATE_NORMAL)
+                    an <= an_closet;
+                    seg <= seg_closet;
+                end
+                default: begin
+                    // Handle default case
+                    an <= an_closet;
+                    seg <= seg_closet;
+                end
+            endcase
             
             // Debouncing for return home button
             if (down == 1 && count == 0)
