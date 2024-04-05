@@ -31,10 +31,13 @@ module Top_Student (
     wire [15:0] oled_data_closet;
     wire [15:0] oled_data_bath;
     wire [15:0] oled_data_drive;
+    wire [15:0] oled_data_work;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
     flexible_clock_module clk_divider_6p25m(clock, 7, clk_6p25m);
+    wire [31:0] clk30hz;
+    flexible_clock_module clk_divider_30hz(clock, 1666666, clk30hz);
         
     wire [2:0] todo;
     reg enable_home; 
@@ -43,6 +46,7 @@ module Top_Student (
     reg enable_closet;
     reg enable_bath;
     reg enable_drive;
+    reg enable_work;
     reg [2:0] activities;
     reg [2:0] prev_todo = 3'b000; // 1: from home, 2: from work
     
@@ -53,6 +57,7 @@ module Top_Student (
         enable_closet = 0;
         enable_bath = 0;
         enable_drive = 0;
+        enable_work = 0;
         activities = 3'b000;
     end
     
@@ -74,6 +79,9 @@ module Top_Student (
     
     wire [6:0] segBath;
     wire [3:0] anBath;
+    
+    wire [15:0] selected_ingredients_register;
+    wire [15:0] oled_data_cook;
     
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
@@ -100,6 +108,9 @@ module Top_Student (
     .reached(reached), .led(led_drive), .btnC(btnC), .btnU(btnU), .btnL(btnL), .btnR(btnR), .btnD(btnD),
      .pixel_index(pixel_index), .oled_data(oled_data_drive));
     
+    work_main unit_work_main(enable_work, pixel_index, clk_6p25m, clk30hz, btnL, btnR, btnC, btnU, btnD, sw[0], sw[2], oled_data_work);
+
+
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
     //todo 1: eat
@@ -119,6 +130,7 @@ module Top_Student (
             enable_closet <= 0;
             enable_bath <= 0;
             enable_drive <= 0;
+            enable_work <= 0;
             led <= led_health;
             oled_data <= oled_data_eat;
         end
@@ -130,6 +142,7 @@ module Top_Student (
             enable_closet <= 0;
             enable_bath <= 0;
             enable_drive <= 0;
+            enable_work <= 0;
             oled_data <= oled_data_sleep;
         end
         else if (todo == 3)
@@ -149,6 +162,16 @@ module Top_Student (
             enable_drive <= 1; 
             led <= led_drive;
             oled_data <= oled_data_drive;
+            if (sw[1]) begin
+            enable_eat <= 0;
+            enable_home <= 0;
+            enable_sleep <= 0;
+            enable_closet <= 0;
+            enable_bath <= 0;
+            enable_drive <= 0; 
+            enable_work <= 1;
+            oled_data <= oled_data_work;
+            end
         end
         else if (todo == 4)
         begin
@@ -158,6 +181,7 @@ module Top_Student (
             enable_closet <= 1;
             enable_bath <= 0;
             enable_drive <= 0;
+            enable_work <= 0;
             seg <= segCloset;
             an <= anCloset;
             dp <= dp_closet;
@@ -172,6 +196,7 @@ module Top_Student (
             enable_closet <= 0;
             enable_bath <= 1;
             enable_drive <= 0;
+            enable_work <= 0;
             an <= anBath;
             seg <= segBath;
             oled_data <= oled_data_bath;
@@ -188,6 +213,7 @@ module Top_Student (
             enable_closet <= 0;
             enable_bath <= 0;
             enable_drive <= 0;
+            enable_work <= 0;
             seg <= segHome;
             an <= anHome;
             dp <= dpHome;
