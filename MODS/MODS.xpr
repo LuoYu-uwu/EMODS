@@ -348,6 +348,12 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/selection.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/new/seg_satisfied.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
