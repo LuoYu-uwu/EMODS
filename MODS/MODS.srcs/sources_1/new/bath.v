@@ -21,7 +21,8 @@
 
 
 module bath(input enable, input btnC, input btnL, input btnR, input btnD, input btnU,
-    input clock, input [12:0] pixel_index, 
+    input clock, input [12:0] pixel_index, output reg [3:0] an = 4'b1111,
+    output reg [6:0] seg = 7'b1111_111,
     output reg [15:0] oled_data = 0, output return, output reg increase = 0);
     
     wire clk_25mhz;
@@ -33,9 +34,13 @@ module bath(input enable, input btnC, input btnL, input btnR, input btnD, input 
     reg [31:0] counts = 0; //counting 4s to return home
     reg [31:0] count = 0; //counting for moving soap bar
     
-    //default sleeping image
+    //default bathing image
     wire [15:0] oled_data_bath;
     bath_image unit_bath(pixel_index, clk_25mhz, oled_data_bath);
+    
+    wire [6:0] seg1;
+    wire [3:0] an1;
+    seg_control_yay unit_seg(clock, an1, seg1);
     
     parameter blue = 16'b01001_011011_11110;
     parameter pink = 16'b11111_101000_10110;
@@ -252,9 +257,16 @@ module bath(input enable, input btnC, input btnL, input btnR, input btnD, input 
             end
             if (dirt1==1&&dirt2==1&&dirt3==1)
             begin
+                seg <= seg1;
+                an <= an1;
                 //wait for 1.5s to go back home
                 counts <= (counts == 37500000) ? counts : counts + 1;
                 increase <= 1;
+            end
+            else
+            begin
+                seg <= 7'b1111111;
+                an <= 4'b1111;
             end
             if (counts == 37500000)
             begin
