@@ -23,7 +23,9 @@
 module home(input enable, input goSleep, input return_home, input [12:0] pixel_index, 
     input btnC, input btnL, input btnR, input btnD, input btnU,
     input clock, output reg [15:0] oled_data = 0, 
-    output reg [2:0] todo = 0);
+    output reg [2:0] todo = 0, 
+    output reg [2:0] prev_todo = 3'b000 // 1: from home, 2: from work
+    );
     
     parameter black = 16'b0;
     
@@ -160,6 +162,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
             if (return_home == 1)
             begin
                 todo <= 0;
+                prev_todo <= 1;
             end
             count <= 0;
             pause <= 0;

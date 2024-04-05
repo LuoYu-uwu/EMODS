@@ -30,6 +30,7 @@ module Top_Student (
     wire [15:0] oled_data_sleep;
     wire [15:0] oled_data_closet;
     wire [15:0] oled_data_bath;
+    wire [15:0] oled_data_drive;
     wire [12:0] pixel_index;
     
     wire [31:0] clk_6p25m;
@@ -41,8 +42,9 @@ module Top_Student (
     reg enable_sleep;
     reg enable_closet;
     reg enable_bath;
+    reg enable_drive;
     reg [2:0] activities;
-    reg [2:0] prev_todo = 3'b000;
+    reg [2:0] prev_todo = 3'b000; // 1: from home, 2: from work
     
     initial begin
         enable_home = 1;
@@ -50,6 +52,7 @@ module Top_Student (
         enable_sleep = 0;
         enable_closet = 0;
         enable_bath = 0;
+        enable_drive = 0;
         activities = 3'b000;
     end
     
@@ -86,13 +89,23 @@ module Top_Student (
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU, sw,
     pixel_index, closetToHome, anCloset, segCloset, dp_closet, led_closet, oled_data_closet);
     
+    // driving module
+    wire [1:0] reached; //output, 0: haven't reach, 1: reached work, 2: reached home
+    reg to_work; //input, 1 means going to work, 0 means going home
+    wire [15:0] led_drive;
+    driving unit_drive (.enable(enable_drive), .CLOCK(clock), .sw(sw), .to_work(to_work),
+    .reached(reached), .led(led_drive), .btnC(btnC), .btnU(btnU), .btnL(btnL), .btnR(btnR), .btnD(btnD),
+     .pixel_index(pixel_index), .oled_data(oled_data_drive));
+    
     //todo: the activity show in icon! left most: 4, right most: 1
     //todo 0: return home
     //todo 1: eat
     //todo 2: sleep
-    //todo 3: go work
+    //todo 3: go drive
     //todo 4: change clothes
     //todo 5: shower
+    //todo 6: go work
+    
     
     always @ (posedge clock) begin
         if (todo == 1)
@@ -102,6 +115,7 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 0;
             enable_bath <= 0;
+            enable_drive <= 0;
             led <= led_health;
             oled_data <= oled_data_eat;
         end
@@ -112,7 +126,26 @@ module Top_Student (
             enable_sleep <= 1;
             enable_closet <= 0;
             enable_bath <= 0;
+            enable_drive <= 0;
             oled_data <= oled_data_sleep;
+        end
+        else if (todo == 3)
+        begin
+            // from home
+            if (prev_todo == 1) begin
+                to_work <= 1;
+            // from work
+            end else if (prev_todo == 2) begin
+                to_work <= 0;
+            end
+            enable_eat <= 0;
+            enable_home <= 0;
+            enable_sleep <= 0;
+            enable_closet <= 0;
+            enable_bath <= 0;
+            enable_drive <= 1; 
+            led <= led_drive;
+            oled_data <= oled_data_drive;
         end
         else if (todo == 4)
         begin
@@ -121,6 +154,7 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 1;
             enable_bath <= 0;
+            enable_drive <= 0;
             seg <= segCloset;
             an <= anCloset;
             dp <= dp_closet;
@@ -134,7 +168,12 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 0;
             enable_bath <= 1;
+            enable_drive <= 0;
             oled_data <= oled_data_bath;
+        end
+        else if (todo == 6)
+        begin
+            //do sth
         end
         else
         begin
@@ -143,6 +182,7 @@ module Top_Student (
             enable_sleep <= 0;
             enable_closet <= 0;
             enable_bath <= 0;
+            enable_drive <= 0;
             seg <= segHome;
             an <= anHome;
             dp <= dpHome;
