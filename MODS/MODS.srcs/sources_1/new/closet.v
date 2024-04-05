@@ -59,6 +59,10 @@ module closet(
     reg [2:0] shoe_number;
     reg [2:0] glove_number;
     
+    reg satisfy_yellow;
+    reg satisfy_orange;
+    reg satisfy_blue;
+    
     reg [1:0] an_index = 0;
     reg [3:0] an_outfit = 4'b1110;
     reg [3:0] an_hat = 4'b1101;
@@ -125,6 +129,25 @@ module closet(
     assign dp = 1;
     
     always @(posedge clk_25mhz) begin
+    
+        if (outfit_number == 1 && hat_number == 2 && shoe_number == 3 && glove_number == 3) begin
+            satisfy_yellow <= 1;
+        end else begin
+            satisfy_yellow <= 0;
+        end
+    
+        if (outfit_number == 2 && hat_number == 1 && shoe_number == 2 && glove_number == 2) begin
+            satisfy_orange <= 1;
+        end else begin
+            satisfy_orange <= 0;
+        end
+        
+        if (outfit_number == 3 && hat_number == 4 && shoe_number == 4 && glove_number == 4) begin
+            satisfy_blue <= 1;
+        end else begin
+            satisfy_blue <= 0;
+        end
+    
         case (current_state)
             STATE_NORMAL: begin
                 if (centre && !satisfactory_state) begin
@@ -137,7 +160,7 @@ module closet(
                 if (!centre) begin
                     // Button released before 2 seconds
                     next_state <= STATE_NORMAL;
-                end else if (satisfaction_counter >= 50_000_000) begin  // 2 seconds at 25 MHz
+                end else if (satisfaction_counter >= 25_000_000 && (satisfy_yellow || satisfy_orange || satisfy_blue)) begin  // 1 second at 25 MHz
                     // Transition to display SLAY state
                     next_state <= STATE_DISPLAY_SLAY;
                     satisfaction_counter <= 0;  // Reset the counter for displaying SLAY
@@ -146,7 +169,7 @@ module closet(
                 end
             end
             STATE_DISPLAY_SLAY: begin
-                if (satisfaction_counter >= 25_000_000) begin  // 1 second at 25 MHz
+                if (satisfaction_counter >= 25_000_000) begin 
                     // Transition to revert display state
                     next_state <= STATE_REVERT_DISPLAY;
                 end else begin
