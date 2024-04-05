@@ -32,6 +32,7 @@ module collision (
     always @ (posedge clk25m) begin
         // reset col_status 
         if (enable == 0 || 5'b10000) begin
+//        if (5'b10000) begin
             reached <= 0;
             col_status <= 0;
         end
@@ -40,7 +41,7 @@ module collision (
         if (centre_x  >= 0 && (centre_x - 3) <= 31 && (centre_y + 3) >= 38 && (centre_y + 3) <= 64) begin
             col_status <= 1;
         // top left grass
-        end else if (centre_x >= 0 && centre_x <= 4 && (centre_y - 3) <= 27) begin
+        end else if ((centre_x - 3) <= 4 && (centre_y - 3) <= 27) begin
             col_status <= 1;
         // middle left grass
         end else if ((centre_x + 3) >= 15 && centre_x <= 41 && (centre_y + 3) >= 10 && (centre_y - 3) <= 27) begin
@@ -54,19 +55,17 @@ module collision (
         // bottom right grass
         end else if ((centre_x + 3) >= 75 && (centre_y + 3) >= 62) begin
             col_status <= 1;
-        // edges
-//        end else if (centre_x <= 1 || centre_y <= 1 || centre_y >= 62 || centre_x >= 94) begin
-//            col_status <= 1;
+        // top edge
+        end else if ((centre_y - 3) <= 0) begin
+            col_status <= 1;
         end
         
         // update if reached work
         if ((centre_x + 3) == 95) begin
             reached <= 1;
-        // update if reached home
-        end else if ((centre_x - 3) == 0) begin
+        // update if reached home and not false triggered when intialised during day
+        end else if ((centre_x - 3) == 0 && btns == 5'b00100) begin
             reached <= 2;
         end
     end
-       
-
 endmodule
