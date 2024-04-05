@@ -4,6 +4,7 @@
 <!-- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.   -->
 
 <Project Version="7" Minor="38" Path="C:/Users/liuyi/OneDrive - National University of Singapore/Y2S2/EE2026/EMODS/MODS/MODS.xpr">
+
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="f94a5ac9f263460da3f685dc06011664"/>
@@ -276,6 +277,13 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/new/seg_control_sos.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/seg_control_yay.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
