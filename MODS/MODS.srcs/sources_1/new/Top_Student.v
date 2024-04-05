@@ -72,6 +72,9 @@ module Top_Student (
     wire [15:0] led_closet;
     wire dp_closet;
     
+    wire [6:0] segBath;
+    wire [3:0] anBath;
+    
     home unit_home(enable_home, goSleep, returnHome, pixel_index, 
         btnC, btnL, btnR, btnD, btnU, clock, oled_data_home, todo);
     
@@ -84,7 +87,7 @@ module Top_Student (
     sleep unit_sleep(enable_sleep, clock, pixel_index, oled_data_sleep, sleepToHome, sleeping);
     
     bath unit_bath(enable_bath, btnC, btnL, btnR, btnD, btnU, clock, pixel_index, 
-        oled_data_bath, bathToHome, bathing);
+        anBath, segBath, oled_data_bath, bathToHome, bathing);
     
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU, sw,
     pixel_index, closetToHome, anCloset, segCloset, dp_closet, led_closet, oled_data_closet);
@@ -169,6 +172,8 @@ module Top_Student (
             enable_closet <= 0;
             enable_bath <= 1;
             enable_drive <= 0;
+            an <= anBath;
+            seg <= segBath;
             oled_data <= oled_data_bath;
         end
         else if (todo == 6)
