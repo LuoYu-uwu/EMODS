@@ -229,7 +229,7 @@ module closet(
                 end
             end else if (sw[8]) begin
                 if (sequence_counter >= frequency_counter) begin
-                    outfit_number <= (outfit_number >= 3) ? 0 : outfit_number + 1;
+                    outfit_number <= (outfit_number >= 4) ? 0 : outfit_number + 1;
                     sequence_counter <= 0;
                 end else begin
                     sequence_counter <= sequence_counter + 1;
@@ -246,7 +246,7 @@ module closet(
                     end else if (sw[1]) begin
                         hat_number <= (hat_number == 0) ? 4 : hat_number - 1;
                     end else if (sw[0]) begin
-                        outfit_number <= (outfit_number == 0) ? 3 : outfit_number - 1;
+                        outfit_number <= (outfit_number == 0) ? 4 : outfit_number - 1;
                     end
                 end
                 //when right button is pushed
@@ -260,7 +260,7 @@ module closet(
                     end else if (sw[1]) begin
                         hat_number <= (hat_number == 4) ? 0 : hat_number + 1;
                     end else if (sw[0]) begin
-                        outfit_number <= (outfit_number == 3) ? 0 : outfit_number + 1;
+                        outfit_number <= (outfit_number == 4) ? 0 : outfit_number + 1;
                     end
                 end
             end
