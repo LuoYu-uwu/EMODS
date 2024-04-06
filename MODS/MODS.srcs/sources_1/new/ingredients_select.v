@@ -26,7 +26,7 @@ input [15:0] selected_ingredients_register, output reg [15:0] oled_data = 0);
 //pizza pics
 wire [15:0] oled_data_failed_pizza, oled_data_pep_pizza, oled_data_haw_pizza,oled_data_cheese_pizza, oled_data_tomato_pizza;
 //cheese_pizza unit_cheese_pizza (pixel_index, clock, oled_data_cheese_pizza);
-tomato_pizza unit_tomato_pizza (pixel_index, clock, oled_data_tomato_pizza);
+//tomato_pizza unit_tomato_pizza (pixel_index, clock, oled_data_tomato_pizza);
 pep_pizza unit_pep_pizza (pixel_index, clock, oled_data_pep_pizza);
 haw_pizza unit_haw_pizza (pixel_index, clock, oled_data_haw_pizza);
 failed_pizza unit_failed_pizza (pixel_index, clock, oled_data_failed_pizza);

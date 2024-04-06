@@ -20,8 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module selection(input state, input [12:0] pixel_index, input left, input right, input centre, input up, input down, input sw, sw2,
-input clock, input clk30hz, output reg [15:0] selected_ingredients_register, output reg [15:0] oled_data = 0);
+module selection(input state, input [12:0] pixel_index, input left, input right, input centre, input up, input down,
+input sw, sw1, sw2, input clock, input clk30hz, input reset_selection, 
+output reg [15:0] selected_ingredients_register, output reg [15:0] oled_data = 0);
 
 wire [15:0] oled_data_ingredients;
 ingredients_pic unit_ingredients (pixel_index, clock, oled_data_ingredients);
@@ -55,9 +56,6 @@ reg [6:0] selected_ingredient = DOUGH;
 
 always @ (posedge clock)
 begin
-//    if (clear_select == 1) begin
-//        selected_ingredients_register <= NONE;
-//    end
     if (xLL == 4 && yUU == 1) begin
         selected_ingredient = DOUGH;
     end
@@ -82,9 +80,6 @@ always @ (posedge clock)
 begin
     if (state == 1)
     begin
-        if (sw2) begin 
-        clear_select = 1;
-        end
         //when left button is pushed
         if (left == 1 && count == 0)
         begin
@@ -125,7 +120,11 @@ begin
         if (centre == 1 && count == 0)
         begin
             count = count + 1;
+            if (sw2 == 1) begin
+                selected_ingredients_register <= 0;
+            end else begin
             selected_ingredients_register <= selected_ingredients_register | selected_ingredient;
+            end
         end
         //debouncing
         count <= (count > 0 && count != 5000001) ? count + 1 : 0;
