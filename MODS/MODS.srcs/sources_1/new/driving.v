@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05.04.2024 15:08:16
+// Create Date: 17.03.2024 15:08:16
 // Design Name: 
 // Module Name: driving
 // Project Name: 
@@ -29,8 +29,7 @@ module driving(
     output [15:0] led,
     input btnC, btnU, btnL, btnR, btnD,
     input [12:0] pixel_index,
-    output reg [15:0] oled_data,
-    output reg [2:0] todo = 0);
+    output reg [15:0] oled_data);
 
     // clock modules
     wire clk6p25m;
@@ -42,7 +41,7 @@ module driving(
     
     // module to change speed of car
     wire freq_select;
-    freq_select_module freq_unit0 (.sw(sw[1:0]), .CLOCK(CLOCK), .freq_select(freq_select));
+    freq_select_module freq_unit0 (.sw(sw[15:14]), .CLOCK(CLOCK), .freq_select(freq_select));
 
     // coordinate controls
     wire [7:0] x;
@@ -113,13 +112,6 @@ module driving(
                     oled_data <= oled_data_road;
                 end
             end
-            // reached work
-            if (reached == 1) begin
-                todo <= 6;
-            // reached home
-            end else if (reached == 2) begin
-                todo <= 0;
-            end
         end else begin
             // set clear to 1 if enable is off
             clear <= 1;
@@ -187,9 +179,7 @@ module driving(
                 5'b01000:
                 begin
                     if (col_status == 0) begin
-                        if (curr_top > 1) begin
-                            curr_centre_y <= curr_centre_y - 1;
-                        end
+                        curr_centre_y <= curr_centre_y - 1;
                         curr_left <= curr_centre_x - 2;
                         curr_right <= curr_centre_x + 2;
                         curr_top <= curr_centre_y - 3;
@@ -213,7 +203,7 @@ module driving(
         end
         
         // led to light up collided
-        if (col_status == 1 || reached != 0) begin
+        if (col_status == 1) begin
             led_status <= 16'b1111_1111_1111_1111;
         end else begin
             led_status <= 0;

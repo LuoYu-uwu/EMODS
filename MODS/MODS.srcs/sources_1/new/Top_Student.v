@@ -61,9 +61,10 @@ module Top_Student (
         activities = 3'b000;
     end
     
-    wire returnHome, sleepToHome, eatToHome, closetToHome, bathToHome;
+    wire returnHome, sleepToHome, eatToHome, closetToHome, bathToHome; 
+    reg driveToHome = 0;
     wire goSleep;
-    assign returnHome = (sleepToHome || eatToHome || closetToHome || bathToHome);
+    assign returnHome = (sleepToHome || eatToHome || closetToHome || bathToHome || driveToHome);
     wire eating, sleeping, bathing;
     wire [2:0] increment;
     
@@ -102,7 +103,8 @@ module Top_Student (
     
     // driving module
     wire [1:0] reached; //output, 0: haven't reach, 1: reached work, 2: reached home
-    reg to_work; //input, 1 means going to work, 0 means going home
+    reg to_work = 1; //input, 1 means going to work, 0 means going home
+    reg [1:0] reached_status = 0;
     wire [15:0] led_drive;
     driving unit_drive (.enable(enable_drive), .CLOCK(clock), .sw(sw), .to_work(to_work),
     .reached(reached), .led(led_drive), .btnC(btnC), .btnU(btnU), .btnL(btnL), .btnR(btnR), .btnD(btnD),
@@ -115,13 +117,25 @@ module Top_Student (
     //todo 0: return home
     //todo 1: eat
     //todo 2: sleep
-    //todo 3: go drive
+    //todo 3: driving and drive
     //todo 4: change clothes
     //todo 5: shower
-    //todo 6: go work
-    
-    
     always @ (posedge clock) begin
+    
+        if ((btnC == 1 && sw[1] == 0)) begin
+            reached_status <= 0;
+        end else if (reached == 1) begin
+            reached_status <= 1;
+        end else if (reached == 2) begin
+            reached_status <= 2;
+        end
+        
+        if (reached_status == 2) begin
+            driveToHome <= 1;
+        end else begin
+            driveToHome <= 0;
+        end
+        
         if (todo == 1)
         begin
             enable_eat <= 1;
@@ -147,30 +161,27 @@ module Top_Student (
         end
         else if (todo == 3)
         begin
-            // from home
-            if (prev_todo == 1) begin
-                to_work <= 1;
-            // from work
-            end else if (prev_todo == 2) begin
+            an <= 4'b1111;
+            if (sw[1] && reached_status == 1) begin
+                enable_eat <= 0;
+                enable_home <= 0;
+                enable_sleep <= 0;
+                enable_closet <= 0;
+                enable_bath <= 0;
+                enable_drive <= 0; 
+                enable_work <= 1;
+                oled_data <= oled_data_work;
                 to_work <= 0;
-            end
-            enable_eat <= 0;
-            enable_home <= 0;
-            enable_sleep <= 0;
-            enable_closet <= 0;
-            enable_bath <= 0;
-            enable_drive <= 1; 
-            led <= led_drive;
-            oled_data <= oled_data_drive;
-            if (sw[1]) begin
-            enable_eat <= 0;
-            enable_home <= 0;
-            enable_sleep <= 0;
-            enable_closet <= 0;
-            enable_bath <= 0;
-            enable_drive <= 0; 
-            enable_work <= 1;
-            oled_data <= oled_data_work;
+            end else 
+            begin
+                enable_eat <= 0;
+                enable_home <= 0;
+                enable_sleep <= 0;
+                enable_closet <= 0;
+                enable_bath <= 0;
+                enable_drive <= 1; 
+                led <= led_drive;
+                oled_data <= oled_data_drive;
             end
         end
         else if (todo == 4)
@@ -201,10 +212,6 @@ module Top_Student (
             seg <= segBath;
             oled_data <= oled_data_bath;
         end
-        else if (todo == 6)
-        begin
-            //do sth
-        end
         else
         begin
             enable_home <= 1;
@@ -219,6 +226,7 @@ module Top_Student (
             dp <= dpHome;
             led <= led_health;
             oled_data <= oled_data_home;
+            to_work <= 1;
         end
     end
     
