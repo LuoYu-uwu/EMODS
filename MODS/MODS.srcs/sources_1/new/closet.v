@@ -35,7 +35,7 @@ module closet(
     parameter BLINK_CYCLE = 75_000_000;
     parameter CLOSE_EYE = 5_000_000;
     
-    // State definitions
+    //State definitions
     localparam STATE_NORMAL = 2'b00,
                STATE_BUTTON_HOLD = 2'b01,
                STATE_DISPLAY_SLAY = 2'b10,
@@ -151,33 +151,33 @@ module closet(
         case (current_state)
             STATE_NORMAL: begin
                 if (centre && !satisfactory_state) begin
-                    // Transition to button hold state if center button is pressed
+                    //Transition to button hold state if center button is pressed
                     next_state <= STATE_BUTTON_HOLD;
                     satisfaction_counter <= 0;  // Reset the counter
                 end
             end
             STATE_BUTTON_HOLD: begin
                 if (!centre) begin
-                    // Button released before 2 seconds
+                    //Button released before 2 seconds
                     next_state <= STATE_NORMAL;
                 end else if (satisfaction_counter >= 25_000_000 && (satisfy_yellow || satisfy_orange || satisfy_blue)) begin  // 1 second at 25 MHz
-                    // Transition to display SLAY state
+                    //Transition to display SLAY state
                     next_state <= STATE_DISPLAY_SLAY;
-                    satisfaction_counter <= 0;  // Reset the counter for displaying SLAY
+                    satisfaction_counter <= 0;  //Reset the counter for displaying SLAY
                 end else begin
                     satisfaction_counter <= satisfaction_counter + 1;
                 end
             end
             STATE_DISPLAY_SLAY: begin
                 if (satisfaction_counter >= 25_000_000) begin 
-                    // Transition to revert display state
+                    //Transition to revert display state
                     next_state <= STATE_REVERT_DISPLAY;
                 end else begin
                     satisfaction_counter <= satisfaction_counter + 1;
                 end
             end
             STATE_REVERT_DISPLAY: begin
-                // Return to normal state after a brief moment
+                //Return to normal state after a brief moment
                 next_state <= STATE_NORMAL;
             end
         endcase
@@ -189,21 +189,21 @@ module closet(
         if (enable == 1) begin
             
             if (blink_counter >= BLINK_CYCLE) begin
-                blink_counter <= 0; // Reset blink counter
+                blink_counter <= 0; //Reset blink counter
             end else begin
                 blink_counter <= blink_counter + 1;
             end
             
-            // 3s total: 0.2s close eye + 2.8s open eye
+            //3s total: 0.2s close eye + 2.8s open eye
             blink_state <= (blink_counter >= (BLINK_CYCLE - CLOSE_EYE)) ? 1 : 0;
             
-            // Adjust frequency of auto toggle
+            //Adjust frequency of auto toggle
             if (sw[15]) begin
-                frequency_counter = 7_500_000; // 0.3s
+                frequency_counter = 7_500_000; //0.3s
             end else if (sw[14]) begin
-                frequency_counter = 20_000_000; // 0.8s
+                frequency_counter = 20_000_000; //0.8s
             end else begin
-                frequency_counter = 12_500_000; // 0.5s
+                frequency_counter = 12_500_000; //0.5s
             end
             
             if (sw[11]) begin
@@ -278,28 +278,28 @@ module closet(
                 
             case (current_state)
                 STATE_NORMAL: begin
-                    // Normal display logic
+                    //Normal display logic
                     an <= an_closet;
                     seg <= seg_closet;
                 end
                 STATE_DISPLAY_SLAY: begin
-                    // Display "SLAY"
+                    //Display "SLAY"
                     an <= an_satisfied;
                     seg <= seg_satisfied;
                 end
                 STATE_REVERT_DISPLAY: begin
-                    // Revert to initial display (can be merged with STATE_NORMAL)
+                    //Revert to initial display 
                     an <= an_closet;
                     seg <= seg_closet;
                 end
                 default: begin
-                    // Handle default case
+                    //Handle default case
                     an <= an_closet;
                     seg <= seg_closet;
                 end
             endcase
             
-            // Debouncing for return home button
+            //Debouncing for return home button
             if (down == 1 && count == 0)
             begin
                 //go back home
