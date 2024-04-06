@@ -75,7 +75,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
         begin
             pause <= (pause == 5000000) ? pause : pause + 1;
             //when left button is pushed
-            if (left == 1 && count == 0 && activity != 4)
+            if (left == 1 && count == 0 && activity != 4 && pause == 5000000)
             begin
                 //loop back to most right if alr at most left
                 count = count + 1;
@@ -89,7 +89,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
             end
             
             //when right button is pushed
-            if (right == 1 && count == 0 && activity != 4)
+            if (right == 1 && count == 0 && activity != 4 && pause == 5000000)
             begin
                 count = count + 1;
                 xVerticalLeft <= (xVerticalLeft == 75) ? 3 : xVerticalLeft + 24;
@@ -114,7 +114,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
             end
             
             //if up is pressed, only can press if at shower (activity 4)
-            if (up == 1 && count == 0 && xVerticalLeft == 3)
+            if (up == 1 && count == 0 && xVerticalLeft == 3 && pause == 5000000)
             begin
                 count = count + 1;
                 yUp <= (yUp == 3) ? 43 : yUp - 40;
@@ -127,7 +127,7 @@ module home(input enable, input goSleep, input return_home, input [12:0] pixel_i
             end
             
             //when centre button is pushed
-            if (centre == 1 && count == 0)
+            if (centre == 1 && count == 0 && pause == 5000000)
             begin
                 //output the selected activity
                 count = count + 1;
