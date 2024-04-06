@@ -101,7 +101,7 @@ module Top_Student (
     closet unit_closet(enable_closet, clock, btnC, btnL, btnR, btnD, btnU, sw,
     pixel_index, closetToHome, anCloset, segCloset, dp_closet, led_closet, oled_data_closet);
     
-    // driving module
+     // driving module
     wire [1:0] reached; //output, 0: haven't reach, 1: reached work, 2: reached home
     reg to_work = 1; //input, 1 means going to work, 0 means going home
     reg [1:0] reached_status = 0;
@@ -110,7 +110,7 @@ module Top_Student (
     .reached(reached), .led(led_drive), .btnC(btnC), .btnU(btnU), .btnL(btnL), .btnR(btnR), .btnD(btnD),
      .pixel_index(pixel_index), .oled_data(oled_data_drive));
     
-    work_main unit_work_main(enable_work, pixel_index, clk_6p25m, clk30hz, btnL, btnR, btnC, btnU, btnD, sw[0], sw[2], oled_data_work);
+    work_main unit_work_main(enable_work, pixel_index, clk_6p25m, clk30hz, btnL, btnR, btnC, btnU, btnD, sw[0], sw[1], sw[2], oled_data_work);
 
 
     //todo: the activity show in icon! left most: 4, right most: 1
